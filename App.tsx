@@ -1,0 +1,11 @@
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import StackRoutes from "./routes/stack.routes"; // Ajuste o caminho
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <StackRoutes />
+    </NavigationContainer>
+  );
+}
