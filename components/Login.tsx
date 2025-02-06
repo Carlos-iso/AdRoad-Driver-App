@@ -15,7 +15,7 @@ import { Alert } from "react-native";
 import { RootStackParamList } from "../routes/types"; // Importe os tipos
 import backgroundImage from "../assets/images/photo-background.png";
 import Icon from "../assets/images/svgs/Logo.svg";
-
+import { saveToken } from "./Verify/authVerify.ts"
 const apiUrl = "https://adroad-api.onrender.com";
 
 type RegisterScreenNavigationProp = StackNavigationProp<
@@ -41,6 +41,8 @@ const Login = () => {
       const data = await response.json();
       if(data.message == 'Login Bem Sucedido!') {
         Alert.alert(`Sucesso!`, data.message);
+        await saveToken(data.token);
+        await console.log(`${data.token}`);
         await navigation.reset({
           index: 0,
           routes: [{ name: "Home" }],

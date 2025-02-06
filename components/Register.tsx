@@ -15,6 +15,7 @@ import { Alert } from "react-native";
 import { RootStackParamList } from "../routes/types"; // Importe os tipos
 import backgroundImage from "../assets/images/photo-background.png";
 import Icon from "../assets/images/svgs/Logo.svg";
+import { verifyToken } from "./Verify/authVerify.ts"
 
 const apiUrl = "https://adroad-api.onrender.com";
 
@@ -37,6 +38,7 @@ export default function Register() {
       console.warn("Navegação ainda não está pronta.");
       return;
     }
+    verifyToken;
   }, [navigation]);
 
   const handleRegister = async () => {
