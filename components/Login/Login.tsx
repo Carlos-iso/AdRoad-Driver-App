@@ -13,9 +13,9 @@ import {
 } from "react-native";
 import { Alert } from "react-native";
 import { RootStackParamList } from "../../routes/types"; // Importe os tipos
-import backgroundImage from "../assets/images/photo-background.png";
-import Icon from "../assets/images/svgs/Logo.svg";
-import AuthVerify from "../Verify/authVerify";
+import backgroundImage from "../../assets/images/photo-background.png";
+import Icon from "../../assets/images/svgs/Logo.svg";
+import AuthVerify from "../Utils/authVerify";
 const apiUrl = "https://adroad-api.onrender.com";
 
 type RegisterScreenNavigationProp = StackNavigationProp<

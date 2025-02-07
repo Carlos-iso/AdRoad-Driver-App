@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect  } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import {
@@ -13,9 +13,9 @@ import {
 } from "react-native";
 import { Alert } from "react-native";
 import { RootStackParamList } from "../../routes/types"; // Importe os tipos
-import AuthVerify from "../Verify/authVerify";
-import backgroundImage from "../assets/images/photo-background.png";
-import Icon from "../assets/images/svgs/Logo.svg";
+import backgroundImage from "../../assets/images/photo-background.png";
+import Icon from "../../assets/images/svgs/Logo.svg";
+import AuthVerify from "../Utils/authVerify"
 
 const apiUrl = "https://adroad-api.onrender.com";
 
@@ -32,7 +32,6 @@ export default function Register() {
     password: "",
   });
   const { verifyToken } = AuthVerify();
-
   useEffect(() => {
     // Verifique se o objeto de navegação está disponível
     if (!navigation) {

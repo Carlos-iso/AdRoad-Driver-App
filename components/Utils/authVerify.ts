@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../routes/types";
@@ -12,7 +12,8 @@ const AuthVerify = () => {
 
   const saveToken = async (token: string) => {
     try {
-      await AsyncStorage.setItem('token', token);
+      await SecureStore.setItem("token", JSON.stringify({ token }));
+      console.log("Token Salvo");
     } catch (error) {
       console.error(error);
     }
@@ -20,8 +21,12 @@ const AuthVerify = () => {
 
   const getToken = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      return await token;
+      const token = await SecureStore.getItem("token");
+      if (token) {
+        return JSON.parse(token);
+      } else {
+        return null;
+      }
     } catch (error) {
       console.error(error);
     }
@@ -34,29 +39,30 @@ const AuthVerify = () => {
         const tokenObject = JSON.parse(token);
         const getDataToken = new Date(tokenObject.dataToken).getTime();
         const getDataNow = new Date().getTime();
-        const getDiference = (getDataNow - getDataToken) / (1000 * 60 * 60 * 24);
+        const getDiference =
+          (getDataNow - getDataToken) / (1000 * 60 * 60 * 24);
         if (getDiference > 1) {
           // Se o token ainda está válido, redirecionar para a tela de Home
-          await navigation.reset({ index: 0, routes: [{ name: "Home" }], });
+          await navigation.reset({ index: 0, routes: [{ name: "Home" }] });
         } else {
           // Se o token expirou, redirecionar para a tela de Login
-          await navigation.reset({ index: 0, routes: [{ name: "Login" }], });
+          await navigation.reset({ index: 0, routes: [{ name: "Login" }] });
         }
       } catch (error) {
         console.error(error);
         // Se o token não for um objeto válido, redirecionar para a tela de Login
-        await navigation.reset({ index: 0, routes: [{ name: "Login" }], });
+        await navigation.reset({ index: 0, routes: [{ name: "Login" }] });
       }
     } else {
       // Se o token não estiver salvo, redirecionar para a tela de Register
-      await navigation.reset({ index: 0, routes: [{ name: "Register" }], });
+      await navigation.reset({ index: 0, routes: [{ name: "Register" }] });
     }
   };
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('token');
-      await navigation.reset({ index: 0, routes: [{ name: "Login" }], });
+      await SecureStore.deleteItemAsync("token");
+      await navigation.reset({ index: 0, routes: [{ name: "Login" }] });
     } catch (error) {
       console.error(error);
     }
