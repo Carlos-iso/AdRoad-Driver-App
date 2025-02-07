@@ -12,10 +12,10 @@ import {
   StatusBar,
 } from "react-native";
 import { Alert } from "react-native";
-import { RootStackParamList } from "../routes/types"; // Importe os tipos
+import { RootStackParamList } from "../../routes/types"; // Importe os tipos
 import backgroundImage from "../assets/images/photo-background.png";
 import Icon from "../assets/images/svgs/Logo.svg";
-import { saveToken } from "./Verify/authVerify.ts"
+import AuthVerify from "../Verify/authVerify";
 const apiUrl = "https://adroad-api.onrender.com";
 
 type RegisterScreenNavigationProp = StackNavigationProp<
@@ -29,17 +29,18 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const { saveToken } = AuthVerify();
   const handleLogin = async () => {
     try {
-    const response = await fetch(`${apiUrl}/driver/login`, {
+      const response = await fetch(`${apiUrl}/driver/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(usuario)
+        body: JSON.stringify(usuario),
       });
       const data = await response.json();
-      if(data.message == 'Login Bem Sucedido!') {
+      if (data.message == "Login Bem Sucedido!") {
         Alert.alert(`Sucesso!`, data.message);
         await saveToken(data.token);
         await console.log(`${data.token}`);
@@ -57,13 +58,10 @@ const Login = () => {
   return (
     <KeyboardAvoidingView style={styles.container}>
       <StatusBar translucent={true} backgroundColor="transparent" />
-      <Image
-        source={backgroundImage}
-        style={styles.fundo}
-      />
+      <Image source={backgroundImage} style={styles.fundo} />
       <View style={styles.filtro} />
       <View style={styles.conteudo}>
-      <Icon width={100} height={100} />
+        <Icon width={100} height={100} />
         {/* <Text style={styles.titulo}>Login</Text> */}
         <View style={styles.formulario}>
           <TextInput

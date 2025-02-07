@@ -2,8 +2,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import MenuTabsRoutes from "./tab.routes";
 
 // Screens
-import Register from "../components/Register";
-import Login from "../components/Login";
+import Register from "../components/Register/Register";
+import Login from "../components/Login/Login";
 
 const Stack = createStackNavigator();
 

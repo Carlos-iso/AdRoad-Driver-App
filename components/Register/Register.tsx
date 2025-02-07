@@ -12,10 +12,10 @@ import {
   StatusBar,
 } from "react-native";
 import { Alert } from "react-native";
-import { RootStackParamList } from "../routes/types"; // Importe os tipos
+import { RootStackParamList } from "../../routes/types"; // Importe os tipos
+import AuthVerify from "../Verify/authVerify";
 import backgroundImage from "../assets/images/photo-background.png";
 import Icon from "../assets/images/svgs/Logo.svg";
-import { verifyToken } from "./Verify/authVerify.ts"
 
 const apiUrl = "https://adroad-api.onrender.com";
 
@@ -31,6 +31,7 @@ export default function Register() {
     email: "",
     password: "",
   });
+  const { verifyToken } = AuthVerify();
 
   useEffect(() => {
     // Verifique se o objeto de navegação está disponível
@@ -68,13 +69,10 @@ export default function Register() {
   return (
     <KeyboardAvoidingView style={styles.container}>
       <StatusBar translucent={true} backgroundColor="transparent" />
-      <Image
-        source={backgroundImage}
-        style={styles.fundo}
-      />
+      <Image source={backgroundImage} style={styles.fundo} />
       <View style={styles.filtro} />
       <View style={styles.conteudo}>
-      <Icon width={100} height={100} />
+        <Icon width={100} height={100} />
         <View style={styles.formulario}>
           <TextInput
             style={styles.input}
