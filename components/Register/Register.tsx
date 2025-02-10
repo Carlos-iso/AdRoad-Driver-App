@@ -13,8 +13,8 @@ import {
 } from "react-native";
 import { Alert } from "react-native";
 import { RootStackParamList } from "../../routes/types"; // Importe os tipos
-import backgroundImage from "../../assets/images/photo-background.png";
-import Icon from "../../assets/images/svgs/Logo.svg";
+import backgroundImage from "../../assets/arts/background-adroad.png";
+import Icon from "../../assets/svgs/Logo.svg";
 import AuthVerify from "../Utils/authVerify";
 
 const apiUrl = "https://adroad-api.onrender.com";
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   filtro: {
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.5)", // Filtro branco
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Filtro branco
     position: "absolute",
     top: 0,
     left: 0,

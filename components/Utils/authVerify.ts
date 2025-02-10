@@ -37,8 +37,9 @@ const AuthVerify = () => {
   const saveToken = async (token: string) => {
     try {
       await SecureStore.setItemAsync("token", JSON.stringify({ token }));
-      console.log("Token Salvo");
-      console.log(getToken())
+      await console.log("Token Salvo");
+      const savedToken = await getToken();
+      console.log(savedToken);
     } catch (error) {
       console.error(error);
     }

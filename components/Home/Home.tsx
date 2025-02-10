@@ -9,7 +9,7 @@ import {
   ImageBackground,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import backgroundAdRoad from "../../assets/images/background-adroad.png"
+import backgroundAdRoad from "../../assets/arts/background-adroad.png"
 import styles from "./StyleHome"
 
 const { width } = Dimensions.get("window");
