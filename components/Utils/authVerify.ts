@@ -1,31 +1,11 @@
-import * as SecureStore from 'expo-secure-store';
-{/* import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../routes/types";
-
-type RegisterScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  "Register"
->;
-
-  const logout = async () => {
-
-    try {
-
-      await SecureStore.deleteItemAsync("token");
-      await navigation.reset({ index: 0, routes: [{ name: "Login" }] });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const navigation = useNavigation<RegisterScreenNavigationProp>();
-*/}
+import * as SecureStore from "expo-secure-store";
 const AuthVerify = () => {
   const getToken = async () => {
     try {
       const token = await SecureStore.getItemAsync("token");
+      const expiresAt = await SecureStore.getItemAsync("expiresAt");
       if (token) {
-        return JSON.parse(token);
+        return { token: JSON.parse(token), expiresAt };
       } else {
         return null;
       }
@@ -34,12 +14,21 @@ const AuthVerify = () => {
     }
   };
 
-  const saveToken = async (token: string) => {
+  const saveToken = async (token: string, expiresAt: string) => {
+    if (!token && !expiresAt) {
+      console.warn(`API Não Retornou token!
+      ${token}`);
+      console.warn(`API Não Retornou Data Do Token!
+      ${expiresAt}`);
+      return;
+    }
     try {
-      await SecureStore.setItemAsync("token", JSON.stringify({ token }));
-      await console.log("Token Salvo");
-      const savedToken = await getToken();
-      console.log(savedToken);
+      await SecureStore.setItemAsync("token", JSON.stringify(token));
+      await SecureStore.setItemAsync("expiresAt", JSON.stringify(expiresAt));
+      await console.log(`Token Salvo!
+      ${token}`);
+      await console.log(`Data do Token Salva!
+      ${expiresAt}`);
     } catch (error) {
       console.error(error);
     }
@@ -47,7 +36,7 @@ const AuthVerify = () => {
 
   return {
     saveToken,
-    getToken
+    getToken,
   };
 };
 

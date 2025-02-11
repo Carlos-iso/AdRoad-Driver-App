@@ -42,7 +42,7 @@ const Login = () => {
       const data = await response.json();
       if (data.message == "Login Bem Sucedido!") {
         await  Alert.alert(`Sucesso!`, `${data.message}, Bem vindo(a) ${data.data.name}!`);
-        await saveToken(data.token);
+        await saveToken(data.token.token, data.token.expiresAt);
         await navigation.reset({
           index: 0,
           routes: [{ name: "Home" }],

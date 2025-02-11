@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import {
@@ -31,48 +31,43 @@ export default function Register() {
     email: "",
     password: "",
   });
-  const { getToken } = AuthVerify()
+  const { getToken } = AuthVerify();
   const verifyToken = async () => {
-    const token = await getToken;
-    if (token) {
-      try {
-        console.log(token.value)
-        const tokenObject = await JSON.parse(token.value)
-        const getDataToken = await new Date(tokenObject.dataToken).getTime();
-        console.log(tokenObject);
-        const getDataNow = await new Date().getTime();
-        console.log(getDataNow);
-        const getDiference =
-          (getDataNow - getDataToken) / (1000 * 60 * 60 * 24);
-        if (getDiference > 1) {
-          // Se o token ainda está válido, redirecionar para a tela de Home
-          await navigation.reset({ index: 0, routes: [{ name: "Home" }] });
-          await Alert.alert(`Sucesso!`, 'Abrindo Home...');
-        } else {
-          // Se o token expirou, redirecionar para a tela de Login
-          await navigation.reset({ index: 0, routes: [{ name: "Login" }] });
-          await Alert.alert(`Falha!`, 'Token expirou!');
-        }
-      } catch (error) {
-        console.error(error);
-        // Se o token não for um objeto válido, redirecionar para a tela de Login
-        await navigation.reset({ index: 0, routes: [{ name: "Login" }] });
-        await Alert.alert(`Falha!`, 'Token Inválido');
+    const token = await getToken();
+    if (!token) {
+      if (!navigation.isFocused()) {
+        await navigation.reset({ index: 0, routes: [{ name: "Register" }] });
+        await Alert.alert(`Cadastre-se`, "Cria Uma Conta Agora!");
       }
-    } else {
-      // Se o token não estiver salvo, redirecionar para a tela de Register
-      await navigation.reset({ index: 0, routes: [{ name: "Register" }] });
-      await Alert.alert(`Falha!`, 'Token não existe');
+    }
+    try {
+      const tokenString = JSON.stringify(token);
+      const tokenObject = JSON.parse(tokenString);
+      const expiresAt = tokenObject.expiresAt;
+      const dataNow = new Date().getTime();
+      const difference = (dataNow - expiresAt);
+      console.log(difference)
+      if (difference <= 86400000/*Um dia em milisegundos*/) {
+        navigation.reset({ index: 0, routes: [{ name: "Home" }] });
+        Alert.alert(`Sucesso!`, "Abrindo Home...");
+      } else {
+        console.log(`Data Agora:${dataNow} | Data Token:${expiresAt}`)
+        navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+        Alert.alert(`Falha!`, "Token expirou!");
+      }
+    } catch (error) {
+      console.error(error);
+      navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+      Alert.alert(`Falha!`, "Token Inválido");
     }
   };
-  
   useEffect(() => {
     // Verifique se o objeto de navegação está disponível
     if (!navigation) {
       console.warn("Navegação ainda não está pronta.");
       return;
     }
-    {/*verifyToken();*/}
+    verifyToken();
   }, [navigation]);
 
   const handleRegister = async () => {
@@ -86,8 +81,8 @@ export default function Register() {
       });
       const data = await response.json();
       if (data.message == "Cadastro Bem Sucedido!") {
-        await Alert.alert(`Sucesso!`, data.message);
-        await navigation.reset({
+        Alert.alert(`Sucesso!`, data.message);
+        navigation.reset({
           index: 0,
           routes: [{ name: "Login" }],
         });
