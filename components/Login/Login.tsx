@@ -15,7 +15,7 @@ import { Alert } from "react-native";
 import { RootStackParamList } from "../../routes/types"; // Importe os tipos
 import backgroundImage from "../../assets/arts/background-adroad.png";
 import Icon from "../../assets/svgs/Logo.svg";
-import AuthVerify from "../Utils/authVerify";
+import tokenManager from "../Utils/tokenManager";
 const apiUrl = "https://adroad-api.onrender.com";
 
 type RegisterScreenNavigationProp = StackNavigationProp<
@@ -29,7 +29,7 @@ const Login = () => {
     email: "",
     password: "",
   });
-  const { saveToken } = AuthVerify();
+  const { saveTokenLocal } = tokenManager();
   const handleLogin = async () => {
     try {
       const response = await fetch(`${apiUrl}/driver/login`, {
@@ -42,7 +42,7 @@ const Login = () => {
       const data = await response.json();
       if (data.message == "Login Bem Sucedido!") {
         await  Alert.alert(`Sucesso!`, `${data.message}, Bem vindo(a) ${data.data.name}!`);
-        await saveToken(data.token.token, data.token.expiresAt);
+        await saveTokenLocal(data.token.token, data.token.expiresAt, data.data);
         await navigation.reset({
           index: 0,
           routes: [{ name: "Home" }],

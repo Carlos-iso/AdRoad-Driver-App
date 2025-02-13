@@ -15,7 +15,7 @@ import { Alert } from "react-native";
 import { RootStackParamList } from "../../routes/types"; // Importe os tipos
 import backgroundImage from "../../assets/arts/background-adroad.png";
 import Icon from "../../assets/svgs/Logo.svg";
-import AuthVerify from "../Utils/authVerify";
+import tokenManager from "../Utils/tokenManager";
 
 const apiUrl = "https://adroad-api.onrender.com";
 
@@ -31,45 +31,67 @@ export default function Register() {
     email: "",
     password: "",
   });
-  const { getToken } = AuthVerify();
-  const verifyToken = async () => {
-    const token = await getToken();
-    if (!token) {
+  const { getTokenLocal } = tokenManager();
+  const authToken = async () => {
+    const sessionToken = await getTokenLocal();
+    if (sessionToken === null) {
       if (!navigation.isFocused()) {
         await navigation.reset({ index: 0, routes: [{ name: "Register" }] });
         await Alert.alert(`Cadastre-se`, "Cria Uma Conta Agora!");
+        return
       }
     }
+    if (!sessionToken.token === undefined) {
+      await navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+      Alert.alert(`Bem Vindo De Volta!`, "Sessão Expirou, Faça Login Novamente!");
+      return
+    }
     try {
-      const tokenString = JSON.stringify(token);
-      const tokenObject = JSON.parse(tokenString);
-      const expiresAt = tokenObject.expiresAt;
+      const sessionTokenString = JSON.stringify(sessionToken);
+      const sessionTokenObject = JSON.parse(sessionTokenString);
+      const expiresAt = sessionTokenObject.expiresAt;
       const dataNow = new Date().getTime();
       const difference = (dataNow - expiresAt);
-      console.log(difference)
-      if (difference <= 86400000/*Um dia em milisegundos*/) {
+      //console.log(difference)
+      if (difference <= 86400000) {
         navigation.reset({ index: 0, routes: [{ name: "Home" }] });
         Alert.alert(`Sucesso!`, "Abrindo Home...");
-      } else {
-        console.log(`Data Agora:${dataNow} | Data Token:${expiresAt}`)
-        navigation.reset({ index: 0, routes: [{ name: "Login" }] });
-        Alert.alert(`Falha!`, "Token expirou!");
+        if (difference > 86400000) {
+          //Tentativa de relogin
+          try {
+            async () => {
+            const responseRefreshToken = await fetch(`${apiUrl}/driver/refresh-token`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: {
+                id: sessionTokenObject.userData._id
+              }
+            });
+            const dataRefreshToken = responseRefreshToken.json();
+            console.log("Bem Vindo De Volta!");
+            console.log(dataRefreshToken);
+            }
+        } catch(error) {
+          console.error(error)
+          console.error("Relogin Falhou!")
+        }}
       }
     } catch (error) {
       console.error(error);
-      navigation.reset({ index: 0, routes: [{ name: "Login" }] });
-      Alert.alert(`Falha!`, "Token Inválido");
+      console.error("Algun erro!");
     }
-  };
+  }
   useEffect(() => {
-    // Verifique se o objeto de navegação está disponível
+    // Verifica se o objeto de navegação está disponível
     if (!navigation) {
       console.warn("Navegação ainda não está pronta.");
       return;
     }
-    verifyToken();
+    authToken();
   }, [navigation]);
-
   const handleRegister = async () => {
     try {
       const response = await fetch(`${apiUrl}/driver/new`, {
@@ -93,7 +115,6 @@ export default function Register() {
       console.error(error);
     }
   };
-
   return (
     <KeyboardAvoidingView style={styles.container}>
       <StatusBar translucent={true} backgroundColor="transparent" />
@@ -138,9 +159,8 @@ export default function Register() {
         </View>
       </View>
     </KeyboardAvoidingView>
-  );
-}
-
+  )
+  };
 const styles = StyleSheet.create({
   container: {
     width: "100%",
