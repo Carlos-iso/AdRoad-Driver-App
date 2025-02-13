@@ -13,7 +13,7 @@ export default function MenuTabsRoutes() {
   screenOptions={{
     headerShown: false,
     tabBarStyle: {
-      backgroundColor: '#000', // Fundo preto com transparência
+      backgroundColor: '#000',
     },
   }}
 >

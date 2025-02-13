@@ -1,0 +1,102 @@
+[
+{
+"name": "View",
+"description": "Cria um componente View",
+"code": "<View style={{ $1 }}>$2</View>"
+},
+{
+"name": "Image",
+"description": "Cria um componente Image",
+"code": "<Image source={{ uri: '$1' }} style={{ $2 }} />"
+},
+{
+"name": "Text",
+"description": "Cria um componente Text",
+"code": "<Text style={{ $1 }}>$2</Text>"
+},
+{
+"name": "TouchableOpacity",
+"description": "Cria um componente TouchableOpacity",
+"code": "<TouchableOpacity onPress={$1} style={{ $2 }}>$3</TouchableOpacity>"
+},
+{
+"name": "StyleSheet",
+"description": "Cria um estilo com StyleSheet",
+"code": "const styles = StyleSheet.create({ $1 });"
+},
+{
+"name": "useState",
+"description": "Cria um estado com useState",
+"code": "const [$1, set$1] = useState($2);"
+},
+{
+"name": "useEffect",
+"description": "Cria um efeito com useEffect",
+"code": "useEffect(() => { $1 }, [$2]);"
+},
+{
+"name": "useContext",
+"description": "Cria um contexto com useContext",
+"code": "const $1 = useContext($2);"
+},
+{
+"name": "useReducer",
+"description": "Cria um reducer com useReducer",
+"code": "const [$1, dispatch] = useReducer($2, $3);"
+},
+{
+"name": "useCallback",
+"description": "Cria uma função com useCallback",
+"code": "const $1 = useCallback($2, [$3]);"
+},
+{
+"name": "useMemo",
+"description": "Cria uma memória com useMemo",
+"code": "const $1 = useMemo($2, [$3]);"
+},
+{
+"name": "useRef",
+"description": "Cria uma referência com useRef",
+"code": "const $1 = useRef($2);"
+},
+{
+"name": "FlatList",
+"description": "Cria um componente FlatList",
+"code": "<FlatList data={$1} renderItem={$2} keyExtractor={$3} />"
+},
+{
+"name": "SectionList",
+"description": "Cria um componente SectionList",
+"code": "<SectionList sections={$1} renderItem={$2} renderSectionHeader={$3} keyExtractor={$4} />"
+},
+{
+"name": "Modal",
+"description": "Cria um componente Modal",
+"code": "<Modal visible={$1} animationType={$2} transparent={$3}>$4</Modal>"
+},
+{
+"name": "ActivityIndicator",
+"description": "Cria um componente ActivityIndicator",
+"code": "<ActivityIndicator size={$1} color={$2} />"
+},
+{
+  "name": "TextInput",
+  "description": "Cria um componente TextInput",
+  "code": "<TextInput style={{ $1 }} placeholder={'$2'} value={$3} onChangeText={(texto) => $4} />"
+},
+{
+  "name": "TextInput com segurança",
+  "description": "Cria um componente TextInput com segurança",
+  "code": "<TextInput style={{ $1 }} placeholder={'$2'} value={$3} onChangeText={(texto) => $4} secureTextEntry={true} />"
+},
+{
+  "name": "TextInput com número",
+  "description": "Cria um componente TextInput com número",
+  "code": "<TextInput style={{ $1 }} placeholder={'$2'} value={$3} onChangeText={(texto) => $4} keyboardType={'numeric'} />"
+},
+{
+  "name": "TextInput com e-mail",
+  "description": "Cria um componente TextInput com e-mail",
+  "code": "<TextInput style={{ $1 }} placeholder={'$2'} value={$3} onChangeText={(texto) => $4} keyboardType={'email-address'} />"
+}
+]

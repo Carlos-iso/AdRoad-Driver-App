@@ -52,7 +52,7 @@ export default function Register() {
       const expiresAt = sessionTokenObject.expiresAt;
       const dataNow = new Date().getTime();
       const difference = (dataNow - expiresAt);
-      //console.log(difference)
+      //console.log(difference) 
       if (difference <= 86400000) {
         navigation.reset({ index: 0, routes: [{ name: "Home" }] });
         Alert.alert(`Sucesso!`, "Abrindo Home...");
