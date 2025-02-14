@@ -5,8 +5,12 @@ const tokenManager = () => {
       const token = await SecureStore.getItemAsync("token");
       const expiresAt = await SecureStore.getItemAsync("expiresAt");
       const userData = await SecureStore.getItemAsync("userData");
-      if (token) {
-        return { token: JSON.parse(token), expiresAt, userData: JSON.parse(userData) };
+      if (token && expiresAt && userData) {
+        return {
+          token: JSON.parse(token),
+          expiresAt,
+          userData: JSON.parse(userData),
+        };
       } else {
         return null;
       }
@@ -14,7 +18,11 @@ const tokenManager = () => {
       console.error(error);
     }
   };
-  const saveTokenLocal = async (token: string, expiresAt: string, userData: object) => {
+  const saveTokenLocal = async (
+    token: string,
+    expiresAt: string,
+    userData: object
+  ) => {
     if (!token && !expiresAt) {
       console.warn(`API Não Retornou token!
       ${token}`);
@@ -26,9 +34,9 @@ const tokenManager = () => {
       await SecureStore.setItemAsync("token", JSON.stringify(token));
       await SecureStore.setItemAsync("expiresAt", JSON.stringify(expiresAt));
       await SecureStore.setItemAsync("userData", JSON.stringify(userData));
-      await console.log(`Token Salvo!
+      console.log(`Token Salvo!
       ${token}`);
-      await console.log(`Data do Token Salva!
+      console.log(`Data do Token Salva!
       ${expiresAt}`);
     } catch (error) {
       console.error(error);

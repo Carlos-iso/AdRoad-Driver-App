@@ -38,21 +38,24 @@ export default function Register() {
       if (!navigation.isFocused()) {
         await navigation.reset({ index: 0, routes: [{ name: "Register" }] });
         await Alert.alert(`Cadastre-se`, "Cria Uma Conta Agora!");
-        return
+        return;
       }
     }
-    if (!sessionToken.token === undefined) {
+    if (!sessionToken?.token === null) {
       await navigation.reset({ index: 0, routes: [{ name: "Login" }] });
-      Alert.alert(`Bem Vindo De Volta!`, "Sessão Expirou, Faça Login Novamente!");
-      return
+      Alert.alert(
+        `Bem Vindo De Volta!`,
+        "Sessão Expirou, Faça Login Novamente!"
+      );
+      return;
     }
     try {
       const sessionTokenString = JSON.stringify(sessionToken);
       const sessionTokenObject = JSON.parse(sessionTokenString);
-      const expiresAt = sessionTokenObject.expiresAt;
+      const expiresAt = sessionTokenObject?.expiresAt;
       const dataNow = new Date().getTime();
-      const difference = (dataNow - expiresAt);
-      //console.log(difference) 
+      const difference = dataNow - expiresAt;
+      //console.log(difference)
       if (difference <= 86400000) {
         navigation.reset({ index: 0, routes: [{ name: "Home" }] });
         Alert.alert(`Sucesso!`, "Abrindo Home...");
@@ -60,30 +63,34 @@ export default function Register() {
           //Tentativa de relogin
           try {
             async () => {
-            const responseRefreshToken = await fetch(`${apiUrl}/driver/refresh-token`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: {
-                id: sessionTokenObject.userData._id
-              }
-            });
-            const dataRefreshToken = responseRefreshToken.json();
-            console.log("Bem Vindo De Volta!");
-            console.log(dataRefreshToken);
-            }
-        } catch(error) {
-          console.error(error)
-          console.error("Relogin Falhou!")
-        }}
+              const idSend = JSON.stringify({
+                id: sessionTokenObject.userData._id,
+              });
+              const responseRefreshToken = await fetch(
+                `${apiUrl}/driver/refresh-token`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: idSend,
+                }
+              );
+              const dataRefreshToken = responseRefreshToken.json();
+              console.log("Bem Vindo De Volta!");
+              console.log(dataRefreshToken);
+            };
+          } catch (error) {
+            console.error(error);
+            console.error("Relogin Falhou!");
+          }
+        }
       }
     } catch (error) {
       console.error(error);
       console.error("Algun erro!");
     }
-  }
+  };
   useEffect(() => {
     // Verifica se o objeto de navegação está disponível
     if (!navigation) {
@@ -159,8 +166,8 @@ export default function Register() {
         </View>
       </View>
     </KeyboardAvoidingView>
-  )
-  };
+  );
+}
 const styles = StyleSheet.create({
   container: {
     width: "100%",
