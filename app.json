@@ -1,29 +1,29 @@
 {
-  "expo": {
-    "name": "AdRoad-Driver-App",
-    "slug": "AdRoad-Driver-App",
-    "version": "0.0.1",
-    "orientation": "portrait",
-    "icon": "./assets/arts/icon.png",
-    "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/arts/background-adroad.png",
-      "backgroundColor":"#000",
-      "resizeMode": "cover",
-      "duration": 3000
-    },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/arts/adaptative-icon.png",
-        "backgroundColor": "#000"
-      }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "expo": {
+        "name": "AdRoad-Driver-App",
+        "slug": "AdRoad-Driver-App",
+        "version": "0.0.1",
+        "orientation": "portrait",
+        "icon": "./assets/arts/icon.png",
+        "userInterfaceStyle": "dark",
+        "newArchEnabled": true,
+        "splash": {
+            "image": "./assets/arts/background-adroad.png",
+            "backgroundColor": "#000",
+            "resizeMode": "cover",
+            "duration": 3000
+        },
+        "ios": {
+            "supportsTablet": true
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/arts/adaptative-icon.png",
+                "backgroundColor": "#000"
+            },
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        }
     }
-  }
 }
