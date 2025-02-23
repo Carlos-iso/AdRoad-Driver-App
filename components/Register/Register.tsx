@@ -16,6 +16,7 @@ import { RootStackParamList } from "../../routes/types";
 import backgroundImage from "../../assets/arts/background-adroad.png";
 import Icon from "../../assets/svgs/Logo.svg";
 import tokenManager from "../Utils/tokenManager";
+import { timeMs } from "../Utils/Utils.ts";
 
 const apiUrl = "https://adroad-api.onrender.com";
 
@@ -23,9 +24,6 @@ type RegisterScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     "Register"
 >;
-function timeToken(seg: number) {
-    return seg * 1000;
-}
 
 export default function Register() {
     const navigation = useNavigation<RegisterScreenNavigationProp>();
@@ -47,15 +45,14 @@ export default function Register() {
                 return;
             }
         }
-        if (
-            sessionToken?.token === "" ||
-            sessionToken?.issuedAt > timeToken(120)
-        ) {
-            console.log("Tentando Relogin…");
-            Alert.alert(`Entrando Novamente!`, "Tentando Entrar Novamente");
+        if (sessionToken.token === "" || sessionToken.issuedAt > timeMs(120)) {
+            Alert.alert(`Entrando Novamente!`, `Redirecionando Para Login…`);
             await navigation.reset({ index: 0, routes: [{ name: "Login" }] });
         }
-        if (sessionToken?.issuedAt <= timeToken(120)) {
+        if (
+            sessionToken.issuedAt <= timeMs(120) &&
+            sessionToken.issuedAt > timeMs(0)
+        ) {
             await navigation.reset({ index: 0, routes: [{ name: "Home" }] });
             Alert.alert(`Sucesso!`, "Abrindo Home…");
         }

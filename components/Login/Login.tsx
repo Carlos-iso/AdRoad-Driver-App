@@ -16,13 +16,12 @@ import { RootStackParamList } from "../../routes/types"; // Importe os tipos
 import backgroundImage from "../../assets/arts/background-adroad.png";
 import Icon from "../../assets/svgs/Logo.svg";
 import tokenManager from "../Utils/tokenManager";
+import { timeMs } from "../Utils/Utils.ts";
 const apiUrl = "https://adroad-api.onrender.com";
-
 type RegisterScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     "Login"
 >;
-
 const Login = () => {
     const navigation = useNavigation<RegisterScreenNavigationProp>();
     const [usuario, setUsuario] = useState({
@@ -30,28 +29,53 @@ const Login = () => {
         password: ""
     });
     const { saveTokenLocal, getTokenLocal, updateTokenLocal } = tokenManager();
-    // console.log(getTokenLocal());
     const verifyToken = async () => {
         const sessionToken = await getTokenLocal();
-        const issuedAt = sessionToken.issuedAt * 1000; // Convertir para milissegundos
+        await Alert.alert(`Aguarde…`, `Buscando Banco`);
         const dateNow = Date.now();
-        const diference = dateNow - issuedAt;
-
-        if (diference >= 0) {
+        const diference = dateNow - sessionToken.issuedAt;
+        if (diference > timeMs(120)) {
             // Token expirou
-            console.log("Token expirou");
+            await Alert.alert(`Sessão Expirou!`, `Tentando Entrar Novamente…`);
+            console.log(`Token Vencido: ${sessionToken.token}`);
             try {
-                const response = await fetch(`${apiUrl}/refresh-token`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-access-token": `${sessionToken.token}`
-                    },
-                    body: JSON.stringify({ id: sessionToken.id })
-                });
-                const data = await response.json();
-                await updateTokenLocal(data.token, data.issuedAt, data.userData);
-                navigation.navigate("Home");
+                let initTry
+                const responseRefrashToken = await fetch(
+                    `${apiUrl}/driver/refresh-token`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-access-token": sessionToken.token
+                        },
+                        body: JSON.stringify({ id: sessionToken.userData.id })
+                    }
+                );
+                const dataRefrashToken = await responseRefrashToken.json();
+                // Verifica se as informações vieram
+                if (
+                    !dataRefrashToken.dataUser ||
+                    !dataRefrashToken.dataUser.id ||
+                    !dataRefrashToken.dataUser.name ||
+                    !dataRefrashToken.dataUser.email
+                ) {
+                    console.error("Dados do usuário inválidos");
+                    await Alert.alert(`Falha!`, `Sem Dados De Usuário!`);
+                    return;
+                }
+                // Verifica a requisição foi sucedida
+                // Implementar Switch
+                if (dataRefrashToken.message === "Relogin Bem Sucedido!") {
+                    const { token, dataUser } = dataRefrashToken;
+                    await saveTokenLocal(token.token, token.issuedAt, dataUser);
+                    navigation.navigate("Home");
+                } else {
+                    await Alert.alert(
+                        `Falha Relogin!`,
+                        `${dataRefrashToken.message}`
+                    );
+                    navigation.navigate("Login");
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -60,7 +84,6 @@ const Login = () => {
             navigation.navigate("Home");
         }
     };
-
     useEffect(() => {
         verifyToken();
     }, []);
@@ -76,13 +99,7 @@ const Login = () => {
             const data = await response.json();
             if (data.message === "Login Bem Sucedido") {
                 const { token, dataUser } = data;
-                await saveTokenLocal(
-                    token.token,
-                    token.issuedAt,
-                    JSON.stringify(dataUser)
-                );
-                console.log("Salvo!");
-                console.log(dataUser);
+                await saveTokenLocal(token.token, token.issuedAt, dataUser);
                 await Alert.alert(`Sucesso!`, `Bem vindo(a) ${dataUser.name}!`);
                 await navigation.reset({
                     index: 0,
@@ -133,7 +150,6 @@ const Login = () => {
         </KeyboardAvoidingView>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         width: "100%",
@@ -200,5 +216,4 @@ const styles = StyleSheet.create({
         color: "#FFFFFF"
     }
 });
-
 export default Login;

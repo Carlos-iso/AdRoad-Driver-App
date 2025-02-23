@@ -1,13 +1,14 @@
 {
     "dataUser": {
-        "createdAt": "2025-02-16T15:38:24.956Z",
+        "createdAt": "2025-02-18T15:30:40.834Z",
         "email": "carlosbalak2002@gmail.com",
         "id": "67aed25227c6250ba02c9f8c",
         "name": "Carlos Siqueira"
     },
-    "message": "Login Bem Sucedido",
+    "message": "Relogin Bem Sucedido!",
     "token": {
-        "issuedAt": 1739720305422,
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWVkMjUyMjdjNjI1MGJhMDJjOWY4YyIsIm5hbWUiOiJDYXJsb3MgU2lxdWVpcmEiLCJlbWFpbCI6ImNhcmxvc2JhbGFrMjAwMkBnbWFpbC5jb20iLCJyb2xlcyI6WyJ1c2VyIl0sImNyZWF0ZWRBdCI6IjIwMjUtMDItMTZUMTU6Mzg6MjQuOTU2WiIsImlhdCI6MTczOTcyMDMwNSwiZXhwIjoxNzM5NzIxMjA1fQ.sfXX8hKRL4traJ_9k-J8Qze0SmvGUE69oiWh5IFvZgU"
+        "issuedAt": 1739892640835,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWVkMjUyMjdjNjI1MGJhMDJjOWY4YyIsIm5hbWUiOiJDYXJsb3MgU2lxdWVpcmEiLCJlbWFpbCI6ImNhcmxvc2JhbGFrMjAwMkBnbWFpbC5jb20iLCJyb2xlcyI6WyJ1c2VyIl0sImNyZWF0ZWRBdCI6IjIwMjUtMDItMThUMTU6MzA6NDAuODM0WiIsImlhdCI6MTczOTg5MjY0MCwiZXhwIjoxNzM5ODkzNTQwfQ.ILwWjwMuhWflK-L_LexnPG4jOBLNgFhJpm0CHLQ76aY"
     }
 }
+

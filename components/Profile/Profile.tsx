@@ -7,16 +7,16 @@ import tokenManager from "../Utils/tokenManager";
 const Profile = () => {
     const { getTokenLocal } = tokenManager();
     const [usuario, setUsuario] = useState({
-        _id: "",
+        id: "",
         name: "",
-        email: ""
+        email: "",
+        createdAt: ""
     });
 
     const loadProfile = async () => {
         try {
             const getProfileData = await getTokenLocal();
-            setUsuario(JSON.parse(getProfileData.userData));
-            console.log(await getTokenLocal());
+            setUsuario(getProfileData.userData);
         } catch (err) {
             console.error(err);
         }

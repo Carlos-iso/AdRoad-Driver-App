@@ -1,22 +1,37 @@
 import * as SecureStore from "expo-secure-store";
 const apiUrl = "https://adroad-api.onrender.com";
+interface TokenData {
+    token: string;
+    issuedAt: string;
+    userData: {
+        id: string;
+        name: string;
+        email: string;
+        createdAt: string;
+    };
+}
 const tokenManager = () => {
-    const validateTokenLocal = async () => {
-        const tokenLocal = await getTokenLocal();
-        if (!tokenLocal) return false;
+    const removeTokenLocal = async () => {
         try {
-            const responseVerify = await fetch(
-                `${apiUrl}/driver/${tokenLocal.userData.id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-access-token": `${tokenLocal.token}`
-                    }
+            await SecureStore.deleteItemAsync("token");
+            await SecureStore.deleteItemAsync("issuedAt");
+            await SecureStore.deleteItemAsync("userData");
+            console.log("Bancos Deletados");
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    const verifyUserExist = async (id: string, token: string): bolean => {
+        try {
+            const responseVerify = await fetch(`${apiUrl}/driver/${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-access-token": token
                 }
-            );
+            });
             const dataVerify = await responseVerify.json();
-            if (dataVerify.isValid) {
+            if (dataVerify == !null) {
                 return true;
             } else {
                 await removeTokenLocal();
@@ -27,19 +42,26 @@ const tokenManager = () => {
             return false;
         }
     };
-    const getTokenLocal = async () => {
+    const getTokenLocal = async (): Promise<TokenData | null> => {
+        if (!verifyUserExist) {
+            console.error("Usuário Inexistente");
+            return;
+        }
         try {
             const token = await SecureStore.getItemAsync("token");
             const issuedAt = await SecureStore.getItemAsync("issuedAt");
             const userData = await SecureStore.getItemAsync("userData");
-            // console.log(token);
-            // console.log(issuedAt);
-            // console.log(userData);
             if (token && issuedAt && userData) {
+                const userObj = JSON.parse(userData);
                 return {
                     token: token,
-                    issuedAt: issuedAt,
-                    userData: JSON.stringify(userData)
+                    issuedAt: parseInt(issuedAt),
+                    userData: {
+                        id: userObj.id,
+                        name: userObj.name,
+                        email: userObj.email,
+                        createdAt: userObj.createdAt
+                    }
                 };
             } else {
                 return null;
@@ -57,7 +79,7 @@ const tokenManager = () => {
             return "API não retornou dados";
         }
         try {
-            await SecureStore.setItemAsync("token", JSON.stringify(token));
+            await SecureStore.setItemAsync("token", token);
             await SecureStore.setItemAsync(
                 "issuedAt",
                 JSON.stringify(issuedAt)
@@ -66,12 +88,6 @@ const tokenManager = () => {
                 "userData",
                 JSON.stringify(userData)
             );
-            console.log(`Token Salvo!
-            ${token}`);
-            console.log(`Data do Token Salva!
-            ${issuedAt}`);
-            console.log(`Dados De Usuário Salvo!
-            ${userData}`);
         } catch (error) {
             console.error(error);
         }
@@ -81,17 +97,9 @@ const tokenManager = () => {
         issuedAt: number,
         userData: object
     ) => {
-        console.log("hello");
         try {
-            await SecureStore.setItemAsync("token", JSON.stringify(token));
-            await SecureStore.setItemAsync(
-                "issuedAt",
-                JSON.stringify(issuedAt)
-            );
-            await SecureStore.setItemAsync(
-                "userData",
-                JSON.stringify(userData)
-            );
+            console.log("Alterando…");
+            await saveTokenLocal(token, issuedAt, userData);
             console.log(`Token Atualizado! ${token}`);
             console.log(`Data do Token Atualizada! ${issuedAt}`);
             console.log(`Dados do usuario Atualizados! ${userData}`);
@@ -101,8 +109,10 @@ const tokenManager = () => {
         }
     };
     return {
-        saveTokenLocal,
+        removeTokenLocal,
+        verifyUserExist,
         getTokenLocal,
+        saveTokenLocal,
         updateTokenLocal
     };
 };
