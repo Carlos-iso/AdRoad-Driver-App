@@ -16,7 +16,7 @@ import { RootStackParamList } from "../../routes/types"; // Importe os tipos
 import backgroundImage from "../../assets/arts/background-adroad.png";
 import Icon from "../../assets/svgs/Logo.svg";
 import tokenManager from "../Utils/tokenManager";
-import { timeMs } from "../Utils/Utils.ts";
+import { timeMs } from "../Utils/Utils";
 const apiUrl = "https://adroad-api.onrender.com";
 type RegisterScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -33,22 +33,25 @@ const Login = () => {
         const sessionToken = await getTokenLocal();
         await Alert.alert(`Aguarde…`, `Buscando Banco`);
         const dateNow = Date.now();
-        const diference = dateNow - sessionToken.issuedAt;
-        if (diference > timeMs(120)) {
+        const issuedAt = sessionToken?.issuedAt;
+        const diference = dateNow - (sessionToken?.issuedAt as number);
+        if (typeof issuedAt === 'number' && diference > timeMs(120)) {
             // Token expirou
             await Alert.alert(`Sessão Expirou!`, `Tentando Entrar Novamente…`);
-            console.log(`Token Vencido: ${sessionToken.token}`);
+            console.log(`Token Vencido: ${sessionToken?.token}`);
             try {
-                let initTry
+                const headers: HeadersInit = {
+                    'Content-Type': 'application/json',
+                  };
+                  if (sessionToken?.token) {
+                    headers['x-access-token'] = sessionToken.token;
+                  }
                 const responseRefrashToken = await fetch(
                     `${apiUrl}/driver/refresh-token`,
                     {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "x-access-token": sessionToken.token
-                        },
-                        body: JSON.stringify({ id: sessionToken.userData.id })
+                        headers,
+                        body: JSON.stringify({ id: sessionToken?.userData.id })
                     }
                 );
                 const dataRefrashToken = await responseRefrashToken.json();
