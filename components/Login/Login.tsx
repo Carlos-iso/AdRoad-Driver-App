@@ -16,7 +16,7 @@ import { RootStackParamList } from "../../routes/types"; // Importe os tipos
 import backgroundImage from "../../assets/arts/background-adroad.png";
 import Icon from "../../assets/svgs/Logo.svg";
 import tokenManager from "../Utils/tokenManager";
-import { timeMs } from "../Utils/Utils.ts";
+import { timeMs, fetchDataApi } from "../Utils/Utils.ts";
 const apiUrl = "https://adroad-api.onrender.com";
 type RegisterScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -28,59 +28,42 @@ const Login = () => {
         email: "",
         password: ""
     });
-    const { saveTokenLocal, getTokenLocal, updateTokenLocal } = tokenManager();
+    const { saveTokenLocal, getTokenLocal } = tokenManager();
     const verifyToken = async () => {
         const sessionToken = await getTokenLocal();
-        await Alert.alert(`Aguarde…`, `Buscando Banco`);
         const dateNow = Date.now();
         const diference = dateNow - sessionToken.issuedAt;
         if (diference > timeMs(120)) {
             // Token expirou
             await Alert.alert(`Sessão Expirou!`, `Tentando Entrar Novamente…`);
-            console.log(`Token Vencido: ${sessionToken.token}`);
             try {
-                let initTry
-                const responseRefrashToken = await fetch(
+                const headersRefrashToken = {
+                    "Content-Type": "application/json",
+                    "x-access-token": `${sessionToken?.token}`
+                };
+                const bodyRefrashToken = {
+                    id: sessionToken?.userData?.id
+                };
+                const dataRefrashToken = await fetchDataApi(
                     `${apiUrl}/driver/refresh-token`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "x-access-token": sessionToken.token
-                        },
-                        body: JSON.stringify({ id: sessionToken.userData.id })
-                    }
+                    "POST",
+                    headersRefrashToken,
+                    bodyRefrashToken
                 );
-                const dataRefrashToken = await responseRefrashToken.json();
-                // Verifica se as informações vieram
-                if (
-                    !dataRefrashToken.dataUser ||
-                    !dataRefrashToken.dataUser.id ||
-                    !dataRefrashToken.dataUser.name ||
-                    !dataRefrashToken.dataUser.email
-                ) {
-                    console.error("Dados do usuário inválidos");
-                    await Alert.alert(`Falha!`, `Sem Dados De Usuário!`);
-                    return;
-                }
-                // Verifica a requisição foi sucedida
-                // Implementar Switch
-                if (dataRefrashToken.message === "Relogin Bem Sucedido!") {
-                    const { token, dataUser } = dataRefrashToken;
-                    await saveTokenLocal(token.token, token.issuedAt, dataUser);
-                    navigation.navigate("Home");
-                } else {
-                    await Alert.alert(
-                        `Falha Relogin!`,
-                        `${dataRefrashToken.message}`
-                    );
-                    navigation.navigate("Login");
-                }
-            } catch (error) {
-                console.error(error);
+                await saveTokenLocal(
+                    dataRefrashToken.token.token,
+                    dataRefrashToken.token.issuedAt,
+                    dataRefrashToken.dataUser
+                );
+                await Alert.alert(
+                    `Bem Vindo De Volta ${sessionToken.userData.name}!`,
+                    dataRefrashToken.message
+                );
+                await navigation.navigate("Home");
+            } catch (err) {
+                console.error(err);
             }
         } else {
-            console.log("Token ainda é válido");
             navigation.navigate("Home");
         }
     };
@@ -100,8 +83,8 @@ const Login = () => {
             if (data.message === "Login Bem Sucedido") {
                 const { token, dataUser } = data;
                 await saveTokenLocal(token.token, token.issuedAt, dataUser);
-                await Alert.alert(`Sucesso!`, `Bem vindo(a) ${dataUser.name}!`);
-                await navigation.reset({
+                Alert.alert(`Sucesso!`, `Bem vindo(a) ${dataUser.name}!`);
+                navigation.reset({
                     index: 0,
                     routes: [{ name: "Home" }]
                 });

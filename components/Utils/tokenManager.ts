@@ -92,28 +92,11 @@ const tokenManager = () => {
             console.error(error);
         }
     };
-    const updateTokenLocal = async (
-        token: string,
-        issuedAt: number,
-        userData: object
-    ) => {
-        try {
-            console.log("Alterando…");
-            await saveTokenLocal(token, issuedAt, userData);
-            console.log(`Token Atualizado! ${token}`);
-            console.log(`Data do Token Atualizada! ${issuedAt}`);
-            console.log(`Dados do usuario Atualizados! ${userData}`);
-            return await getTokenLocal();
-        } catch (error) {
-            console.error(error);
-        }
-    };
     return {
         removeTokenLocal,
         verifyUserExist,
         getTokenLocal,
         saveTokenLocal,
-        updateTokenLocal
     };
 };
 export default tokenManager;
