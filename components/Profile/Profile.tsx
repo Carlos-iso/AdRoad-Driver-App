@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, StatusBar, StyleSheet } from "react-native";
+import {
+    View,
+    Text,
+    Image,
+    StatusBar,
+    TouchableOpacity,
+    StyleSheet
+} from "react-native";
 import backgroundImage from "../../assets/arts/background-adroad.png";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import tokenManager from "../Utils/tokenManager";
@@ -12,11 +19,10 @@ const Profile = () => {
         email: "",
         createdAt: ""
     });
-
     const loadProfile = async () => {
         try {
             const getProfileData = await getTokenLocal();
-            setUsuario(getProfileData.userData);
+            setUsuario(getProfileData?.userData);
         } catch (err) {
             console.error(err);
         }
@@ -33,18 +39,32 @@ const Profile = () => {
                 <View style={styles.profileCard}>
                     <View style={styles.profilePhoto} />
                     <View style={styles.profileInfo}>
-                        <Text style={styles.profileInfoName}>
-                            Nome: {usuario.name}
-                        </Text>
-                        <Text style={styles.profileInfoPlataform}>
-                            Plataformas:{" "}
-                        </Text>
-                        <Text style={styles.profileInfoId}>
-                            ID: {usuario.id}
-                        </Text>
-                        <Text style={styles.profileInfoaAdCount}>
-                            Anuncios Exibidos:{" "}
-                        </Text>
+                        <View style={styles.profileInfoDivision}>
+                            <Text style={styles.profileInfoName}>
+                                Nome: {usuario?.name}
+                            </Text>
+                            <Text style={styles.profileInfoPlataform}>
+                                Plataformas:{" "}
+                                <TouchableOpacity
+                                    style={styles.profileInfoButton}
+                                    onPress={() =>
+                                        console.log("Botão pressionado!")
+                                    }
+                                >
+                                    <Text style={styles.profileInfoButtonText}>
+                                        Ver
+                                    </Text>
+                                </TouchableOpacity>
+                            </Text>
+                        </View>
+                        <View style={styles.profileInfoDivision}>
+                            <Text style={styles.profileInfoId}>
+                                ID: {usuario?.id}
+                            </Text>
+                            <Text style={styles.profileInfoaAdCount}>
+                                Anuncios Exibidos: {"000"}
+                            </Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -98,25 +118,44 @@ const styles = StyleSheet.create({
         backgroundColor: "#2c2c2c"
     },
     profileInfo: {
+        height: 200,
         flex: 1,
         flexDirection: "column",
-        justifyContent: "space-between"
+        justifyContent: "space-around"
+    },
+    profileInfoDivision: {
+        fontFamily: "Jura_400Regular"
     },
     profileInfoName: {
         fontSize: 18,
-        fontWeight: 400
+        fontWeight: 500,
+        fontFamily: "Jura_400Regular"
     },
     profileInfoPlataform: {
         fontSize: 18,
-        fontWeight: 400
+        fontWeight: 500,
+        fontFamily: "Jura_400Regular"
+    },
+    profileInfoButton: {
+        backgroundColor: "#0E7E58",
+        padding: 10,
+        borderRadius: 5,
+        flexDirection: "row",
+        alignItems: "center"
+    },
+    profileInfoButtonText: {
+        color: "#fff",
+        fontFamily: "Jura_400Regular"
     },
     profileInfoId: {
         fontSize: 18,
-        fontWeight: 400
+        fontWeight: 500,
+        fontFamily: "Jura_400Regular"
     },
     profileInfoaAdCount: {
         fontSize: 18,
-        fontWeight: 400
+        fontWeight: 500,
+        fontFamily: "Jura_400Regular"
     }
 });
 

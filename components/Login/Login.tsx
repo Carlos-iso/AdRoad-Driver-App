@@ -28,30 +28,27 @@ const Login = () => {
         email: "",
         password: ""
     });
-    const { saveTokenLocal, getTokenLocal, updateTokenLocal } = tokenManager();
+    const { saveTokenLocal, getTokenLocal } = tokenManager();
     const verifyToken = async () => {
         const sessionToken = await getTokenLocal();
-        await Alert.alert(`Aguarde…`, `Buscando Banco`);
         const dateNow = Date.now();
         const issuedAt = sessionToken?.issuedAt;
         const diference = dateNow - (sessionToken?.issuedAt as number);
         if (typeof issuedAt === 'number' && diference > timeMs(120)) {
             // Token expirou
             await Alert.alert(`Sessão Expirou!`, `Tentando Entrar Novamente…`);
-            console.log(`Token Vencido: ${sessionToken?.token}`);
+            console.log(`Token Vencido: ${sessionToken.token}`);
             try {
-                const headers: HeadersInit = {
-                    'Content-Type': 'application/json',
-                  };
-                  if (sessionToken?.token) {
-                    headers['x-access-token'] = sessionToken.token;
-                  }
+                let initTry
                 const responseRefrashToken = await fetch(
                     `${apiUrl}/driver/refresh-token`,
                     {
                         method: "POST",
-                        headers,
-                        body: JSON.stringify({ id: sessionToken?.userData.id })
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-access-token": sessionToken.token
+                        },
+                        body: JSON.stringify({ id: sessionToken.userData.id })
                     }
                 );
                 const dataRefrashToken = await responseRefrashToken.json();
@@ -83,7 +80,6 @@ const Login = () => {
                 console.error(error);
             }
         } else {
-            console.log("Token ainda é válido");
             navigation.navigate("Home");
         }
     };
@@ -103,8 +99,8 @@ const Login = () => {
             if (data.message === "Login Bem Sucedido") {
                 const { token, dataUser } = data;
                 await saveTokenLocal(token.token, token.issuedAt, dataUser);
-                await Alert.alert(`Sucesso!`, `Bem vindo(a) ${dataUser.name}!`);
-                await navigation.reset({
+                Alert.alert(`Sucesso!`, `Bem vindo(a) ${dataUser.name}!`);
+                navigation.reset({
                     index: 0,
                     routes: [{ name: "Home" }]
                 });

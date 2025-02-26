@@ -6,6 +6,6 @@
   },
   "include": [
     "**/*", // Inclui todos os arquivos na pasta raiz
-    "declarations.d.ts" // Inclui o arquivo de declaração de tipos
+    "declarations.d.ts", // Inclui o arquivo de declaração de tipos
   ]
 }
