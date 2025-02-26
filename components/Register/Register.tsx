@@ -16,7 +16,7 @@ import { RootStackParamList } from "../../routes/types";
 import backgroundImage from "../../assets/arts/background-adroad.png";
 import Icon from "../../assets/svgs/Logo.svg";
 import tokenManager from "../Utils/tokenManager";
-import { timeMs } from "../Utils/Utils.ts";
+import { timeMs } from "../Utils/Utils";
 
 const apiUrl = "https://adroad-api.onrender.com";
 
@@ -35,15 +35,16 @@ export default function Register() {
     const { getTokenLocal } = tokenManager();
     const authToken = async () => {
         const sessionToken = await getTokenLocal();
-        if (sessionToken === null) {
+        if (!sessionToken) {
             if (!navigation.isFocused()) {
-                await navigation.reset({
+                navigation.reset({
                     index: 0,
                     routes: [{ name: "Register" }]
-                });
-                await Alert.alert(`Cadastre-se`, "Cria Uma Conta Agora!");
+                });              
+                Alert.alert(`Cadastre-se`, "Cria Uma Conta Agora!");
                 return;
             }
+            return
         }
         if (sessionToken.token === "" || sessionToken.issuedAt > timeMs(120)) {
             Alert.alert(`Entrando Novamente!`, `Redirecionando Para Login…`);
