@@ -35,29 +35,20 @@ const styles = StyleSheet.create({
     header: {
         width: "100%",
         height: "20%",
-        flexDirection: "column",
-        backgroundColor: colors.white,
+        alignItems: "center",
+        
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
         marginTop: statusBarHeight
     },
-    headerRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: 24
-    },
-    headerWelcome: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between"
-    },
     logo: {
-        size: 30
+        width: 50,
+        height: 50,
+        color: "#000"
     },
     welcomeText: {
-        fontFamily: "Jura_700Bold",
-        fontSize: 24
+        fontSize: 18,
+        fontWeight: "bold"
     },
     notificationButton: {
         padding: 10

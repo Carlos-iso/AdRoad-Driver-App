@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../../assets/arts/background-adroad.png";
-import Icon from "../../assets/svgs/logo-black.svg";
+import Icon from "../../assets/svgs/subtract.svg";
 import styles from "./StyleHome";
 
 const { width } = Dimensions.get("window");
@@ -29,23 +29,16 @@ const Home = () => {
     ];
     return (
         <View style={styles.containerHome}>
-            <StatusBar translucent={true} backgroundColor="transparent" />
+            <StatusBar translucent={true} backgroundColor="transparent" />{" "}
             <Image source={backgroundImage} style={styles.fundo} />
             <View style={styles.filtro} />
             {/* Header */}
             <View style={styles.header}>
-            <View style={styles.headerRow}>
-                <View style={styles.headerWelcome}>
-                    <Icon style={styles.logo} />
-                    <Text style={styles.welcomeText}>
-                        Bem Vindo, {userName}!
-                    </Text>
-                </View>
-                <View style={styles.headerNotification}>
-                    <TouchableOpacity style={styles.notificationButton}>
-                        <Feather name="bell" size={24} color={"#000"} />
-                    </TouchableOpacity>
-                </View></View>
+                <Icon style={styles.logo} />
+                <Text style={styles.welcomeText}>Bem Vindo, {userName}!</Text>
+                <TouchableOpacity style={styles.notificationButton}>
+                    <Feather name="bell" size={24} color={"#000"} />
+                </TouchableOpacity>
             </View>
             {/* Status */}
             {/* Anúncios */}
