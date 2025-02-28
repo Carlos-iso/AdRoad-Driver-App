@@ -14,7 +14,8 @@ const colors = {
 const styles = StyleSheet.create({
     containerHome: {
         width: "100%",
-        height: "100%"
+        height: "100%",
+        alignItems: "center"
     },
     fundo: {
         width: "100%",
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
     },
     header: {
         width: "100%",
-        height: "20%",
+        height: "15%",
         flexDirection: "column",
         backgroundColor: colors.white,
         borderTopLeftRadius: 50,
@@ -62,9 +63,53 @@ const styles = StyleSheet.create({
     notificationButton: {
         padding: 10
     },
-    notificationIcon: {
-        width: 24,
-        height: 24
+    statusContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 24
+    },
+    statusRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 32
+    },
+    statusAd: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between"
+    },
+    statusLabel: {
+        fontFamily: "Jura_700Bold",
+        fontSize: 18
+    },
+    statusIndicator: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        marginRight: 10
+    },
+    statusText: {
+        fontSize: 16
+    },
+    statusPlataform: {
+        flexDirection: "row",
+        alignItems: "center"
+    },
+    plataformLabel: {
+        fontFamily: "Jura_700Bold",
+        fontSize: 18
+    },
+    adPreviewContainer: {
+        aspectRatio: 16 / 9,
+        width: "90%",
+        backgroundColor: "#fff",
+        borderRadius: 16,
+        marginTop: 24
+    },
+    adPreviewImage: {
+        width: "100%",
+        borderRadius: 10
     }
 });
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -12,15 +12,18 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../../assets/arts/background-adroad.png";
-import Icon from "../../assets/svgs/logo-black.svg";
+import LogoIcon from "../../assets/svgs/logo-black.svg";
+import UberIcon from "../../assets/svgs/uber_icon.svg";
 import styles from "./StyleHome";
 
 const { width } = Dimensions.get("window");
 
 const Home = () => {
+    const adUrl =
+        "https://atacadaobr.vtexassets.com/assets/vtex.file-manager-graphql/images/ae4c17a0-f1e6-45d5-b3a8-c097e055fa09___38b833a1b30024fdf37510ac2578a542.jpg";
     const [userName] = useState("Carlos");
     const [status, setStatus] = useState("ativo"); // 'ativo' ou 'inativo'
-    const [adPreview, setAdPreview] = useState(null);
+    const [adPreview, setAdPreview] = useState(adUrl);
     const [showEarnings, setShowEarnings] = useState(false);
     const earnings = [
         { date: "187.8011", amount: 182.8327 },
@@ -34,21 +37,55 @@ const Home = () => {
             <View style={styles.filtro} />
             {/* Header */}
             <View style={styles.header}>
-            <View style={styles.headerRow}>
-                <View style={styles.headerWelcome}>
-                    <Icon style={styles.logo} />
-                    <Text style={styles.welcomeText}>
-                        Bem Vindo, {userName}!
-                    </Text>
+                <View style={styles.headerRow}>
+                    <View style={styles.headerWelcome}>
+                        <LogoIcon style={styles.logo} />
+                        <Text style={styles.welcomeText}>
+                            Bem Vindo, {userName}!
+                        </Text>
+                    </View>
+                    <View style={styles.headerNotification}>
+                        <TouchableOpacity
+                            style={styles.notificationButton}
+                            onPress={() =>
+                                console.log("Botão Notificações Pressionado!")
+                            }
+                        >
+                            <Feather name="bell" size={24} color={"#000"} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View style={styles.headerNotification}>
-                    <TouchableOpacity style={styles.notificationButton}>
-                        <Feather name="bell" size={24} color={"#000"} />
-                    </TouchableOpacity>
-                </View></View>
+                {/* Status */}
+                <View style={styles.statusContainer}>
+                    <View style={styles.statusRow}>
+                        <View style={styles.statusAd}>
+                            <Text style={styles.statusLabel}>
+                                Status Anúncios:{" "}
+                            </Text>
+                            <View
+                                style={[
+                                    styles.statusIndicator,
+                                    {
+                                        backgroundColor:
+                                            status === "ativo" ? "green" : "red"
+                                    }
+                                ]}
+                            />
+                            <Text style={styles.statusText}>
+                                {status === "ativo" ? "Ativo" : "Inativo"}
+                            </Text>
+                        </View>
+                        <View style={styles.statusPlataform}>
+                            <Text style={styles.plataformLabel}>
+                                Plataforma Em Uso:{" "}
+                            </Text>
+                            <UberIcon size={16} />
+                        </View>
+                    </View>
+                </View>
             </View>
-            {/* Status */}
-            {/* Anúncios */}
+            {/* Anúncios Preview */}
+            <View style={styles.adPreviewContainer}></View>
             {/* Anúncio principal */}
             {/* Lista de anúncios */}
             {/* Gráfico de ganhos */}
