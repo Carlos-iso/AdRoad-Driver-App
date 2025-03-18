@@ -39,7 +39,7 @@ const Login = () => {
     const diference = dateNow - sessionToken.issuedAt;
     if (typeof diference === "number" && diference > timeMs(120)) {
       // Token expirou
-      await Alert.alert(`Sessão Expirou!`, `Tentando Entrar Novamente…`);
+      Alert.alert(`Sessão Expirou!`, `Tentando Entrar Novamente…`);
       console.log(`Token Vencido: ${sessionToken.token}`);
       try {
         const responseRefrashToken = await fetch(
@@ -62,7 +62,7 @@ const Login = () => {
           !dataRefrashToken.dataUser.email
         ) {
           console.error("Dados do usuário inválidos");
-          await Alert.alert(`Falha!`, `Sem Dados De Usuário!`);
+          Alert.alert(`Falha!`, `Sem Dados De Usuário!`);
           return;
         }
         // Verifica a requisição foi sucedida
@@ -72,7 +72,7 @@ const Login = () => {
           await saveTokenLocal(token.token, token.issuedAt, dataUser);
           navigation.navigate("Home");
         } else {
-          await Alert.alert(`Falha Relogin!`, `${dataRefrashToken.message}`);
+          Alert.alert(`Falha Relogin!`, `${dataRefrashToken.message}`);
           navigation.navigate("Login");
         }
       } catch (error) {
@@ -114,7 +114,7 @@ const Login = () => {
   return (
     <KeyboardAvoidingView style={styles.container}>
       <StatusBar translucent={true} backgroundColor="transparent" />
-      <Image source={backgroundImage} style={styles.fundo} />
+      <Image source={backgroundImage} style={styles.fundo} resizeMode="cover"/>
       <View style={styles.filtro} />
       <View style={styles.conteudo}>
         <Icon width={100} height={100} />
@@ -152,7 +152,6 @@ const styles = StyleSheet.create({
   fundo: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover",
     position: "absolute",
     top: 0,
     left: 0,

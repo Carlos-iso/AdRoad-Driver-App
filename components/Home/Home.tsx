@@ -33,7 +33,7 @@ const Home = () => {
     return (
         <View style={styles.containerHome}>
             <StatusBar translucent={true} backgroundColor="transparent" />
-            <Image source={backgroundImage} style={styles.fundo} />
+            <Image source={backgroundImage} style={styles.fundo} resizeMode="cover" />
             <View style={styles.filtro} />
             {/* Header */}
             <View style={styles.header}>
@@ -79,7 +79,7 @@ const Home = () => {
                             <Text style={styles.plataformLabel}>
                                 Plataforma Em Uso:{" "}
                             </Text>
-                            <UberIcon size={16} />
+                            <UberIcon />
                         </View>
                     </View>
                 </View>

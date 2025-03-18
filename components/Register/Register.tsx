@@ -91,7 +91,7 @@ export default function Register() {
     return (
         <KeyboardAvoidingView style={styles.container}>
             <StatusBar translucent={true} backgroundColor="transparent" />
-            <Image source={backgroundImage} style={styles.fundo} />
+            <Image source={backgroundImage} style={styles.fundo} resizeMode="cover"/>
             <View style={styles.filtro} />
             <View style={styles.conteudo}>
                 <Icon width={100} height={100} />
@@ -150,7 +150,6 @@ const styles = StyleSheet.create({
     fundo: {
         width: "100%",
         height: "100%",
-        resizeMode: "cover",
         position: "absolute",
         top: 0,
         left: 0
