@@ -11,10 +11,10 @@ import {
     ImageBackground
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import backgroundImage from "../../assets/arts/background-adroad.png";
-import LogoIcon from "../../assets/svgs/logo-black.svg";
-import UberIcon from "../../assets/svgs/uber_icon.svg";
-import styles from "./StyleHome";
+import backgroundImage from "../../../assets/arts/background-adroad.png";
+import LogoIcon from "../../../assets/svgs/logo-black.svg";
+import UberIcon from "../../../assets/svgs/uber_icon.svg";
+import styles from "../Stylesheet/StyleHome.tsx";
 
 const { width } = Dimensions.get("window");
 
@@ -32,8 +32,12 @@ const Home = () => {
     ];
     return (
         <View style={styles.containerHome}>
-            <StatusBar translucent={true} backgroundColor="transparent" />
-            <Image source={backgroundImage} style={styles.fundo} resizeMode="cover" />
+            <StatusBar translucent={true} backgroundColor='transparent' />
+            <Image
+                source={backgroundImage}
+                style={styles.fundo}
+                resizeMode='cover'
+            />
             <View style={styles.filtro} />
             {/* Header */}
             <View style={styles.header}>
@@ -51,7 +55,7 @@ const Home = () => {
                                 console.log("Botão Notificações Pressionado!")
                             }
                         >
-                            <Feather name="bell" size={24} color={"#000"} />
+                            <Feather name='bell' size={24} color={"#000"} />
                         </TouchableOpacity>
                     </View>
                 </View>

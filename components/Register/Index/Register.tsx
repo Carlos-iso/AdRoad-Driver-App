@@ -9,14 +9,15 @@ import {
     TouchableOpacity,
     StyleSheet,
     KeyboardAvoidingView,
-    StatusBar
+    StatusBar,
+    Alert
 } from "react-native";
-import { Alert } from "react-native";
-import { RootStackParamList } from "../../routes/types";
-import backgroundImage from "../../assets/arts/background-adroad.png";
-import Icon from "../../assets/svgs/Logo.svg";
-import tokenManager from "../Utils/tokenManager";
-import { timeMs } from "../Utils/Utils";
+import { RootStackParamList } from "../../../routes/types";
+import RegisterService from "./RegisterService";
+import backgroundImage from "../../../assets/arts/background-adroad.png";
+import Icon from "../../../assets/svgs/Logo.svg";
+import tokenManager from "../../Utils/tokenManager";
+import { timeMs } from "../../Utils/Utils";
 
 const apiUrl = "https://adroad-api.onrender.com";
 
@@ -40,11 +41,11 @@ export default function Register() {
                 navigation.reset({
                     index: 0,
                     routes: [{ name: "Register" }]
-                });              
-                Alert.alert(`Cadastre-se`, "Cria Uma Conta Agora!");
+                });
+                Alert.alert(`Cadastre-se!`, "Crie Uma Conta Agora!");
                 return;
             }
-            return
+            return;
         }
         if (sessionToken.token === "" || sessionToken.issuedAt > timeMs(120)) {
             Alert.alert(`Entrando Novamente!`, `Redirecionando Para Login…`);
@@ -65,40 +66,30 @@ export default function Register() {
         }
         authToken();
     }, [navigation]);
-    const handleRegister = async () => {
-        try {
-            const response = await fetch(`${apiUrl}/driver/new`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(usuario)
-            });
-            const data = await response.json();
-            if (data.message == "Cadastro Bem Sucedido!") {
-                Alert.alert(`Sucesso!`, data.message);
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: "Login" }]
-                });
-            } else {
-                Alert.alert(`Falha!`, data.message);
-            }
-        } catch (error) {
-            console.error(error);
-        }
+    const onRegister = async () => {
+        const registerService = new RegisterService({
+            apiUrl,
+            navigation,
+            Alert
+        });
+        await registerService.execute(usuario);
+        await console.log(typeof usuario);
     };
     return (
         <KeyboardAvoidingView style={styles.container}>
-            <StatusBar translucent={true} backgroundColor="transparent" />
-            <Image source={backgroundImage} style={styles.fundo} resizeMode="cover"/>
+            <StatusBar translucent={true} backgroundColor='transparent' />
+            <Image
+                source={backgroundImage}
+                style={styles.fundo}
+                resizeMode='cover'
+            />
             <View style={styles.filtro} />
             <View style={styles.conteudo}>
                 <Icon width={100} height={100} />
                 <View style={styles.formulario}>
                     <TextInput
                         style={styles.input}
-                        placeholder="Nome"
+                        placeholder='Nome'
                         value={usuario.name}
                         onChangeText={texto =>
                             setUsuario({ ...usuario, name: texto })
@@ -106,7 +97,7 @@ export default function Register() {
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder="E-mail"
+                        placeholder='E-mail'
                         value={usuario.email}
                         onChangeText={texto =>
                             setUsuario({ ...usuario, email: texto })
@@ -114,7 +105,7 @@ export default function Register() {
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder="Senha"
+                        placeholder='Senha'
                         secureTextEntry
                         value={usuario.password}
                         onChangeText={texto =>
@@ -123,17 +114,14 @@ export default function Register() {
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder="Confirmar Senha"
+                        placeholder='Confirmar Senha'
                         secureTextEntry
                         value={usuario.password}
                         onChangeText={texto =>
                             setUsuario({ ...usuario, password: texto })
                         }
                     />
-                    <TouchableOpacity
-                        style={styles.botao}
-                        onPress={handleRegister}
-                    >
+                    <TouchableOpacity style={styles.botao} onPress={onRegister}>
                         <Text style={styles.botaoTexto}>Cadastrar</Text>
                     </TouchableOpacity>
                 </View>

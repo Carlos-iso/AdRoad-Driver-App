@@ -1,6 +1,8 @@
 export type RootStackParamList = {
-  Login: undefined;
-  Register: undefined;
-  Home: undefined;
-  // Adicione outras rotas aqui
+    SplashScreen: undefined;
+    UserSelect: undefined;
+    Login: undefined;
+    Register: undefined;
+    Home: undefined;
+    // Adicione outras rotas aqui
 };

@@ -10,10 +10,6 @@ import {
     Stop
 } from "react-native-svg";
 import anime from "animejs";
-type RegisterScreenNavigationProp = StackNavigationProp<
-    RootStackParamList,
-    "Splashscreen"
->;
 export default function SplashScreen({ onAnimationEnd }) {
     const svgRef = useRef(null);
     useEffect(() => {
