@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../../routes/types";
 import {
     View,
     Text,
@@ -10,16 +11,15 @@ import {
     StatusBar,
     Alert
 } from "react-native";
-import { RootStackParamList } from "../../../routes/types";
-import RegisterService from "./RegisterService";
-import backgroundImage from "../../../assets/arts/background-adroad.png";
-import Icon from "../../../assets/svgs/Logo.svg";
-import tokenManager from "../../Utils/tokenManager";
-import { timeMs } from "../../Utils/Utils";
-
-const apiUrl = "https://adroad-api.onrender.com";
-
-type RegisterScreenNavigationProp = StackNavigationProp<
+type UserSelecScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     "UserSelect"
 >;
+export default function UserSelect() {
+    const navigation = useNavigation<UserSelecScreenNavigationProp>();
+    return (
+        <View>
+            <Text>User Select</Text>
+        </View>
+    )
+}
