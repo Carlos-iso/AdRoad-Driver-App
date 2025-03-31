@@ -9,7 +9,7 @@ const Stack = createStackNavigator();
 export default function StackRoutes() {
     return (
         <Stack.Navigator
-            initialRouteName='SplashScreen' // Define a tela inicial como Register
+            initialRouteName='SplashScreen' // Define a tela inicial como SplashScreen
             screenOptions={{
                 headerShown: false // Oculta o cabeçalho padrão
             }}
