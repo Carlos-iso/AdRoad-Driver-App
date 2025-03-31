@@ -10,12 +10,13 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   StatusBar,
-  Alert,
+  Alert
 } from "react-native";
 import RegisterService from "../Classes/RegisterService";
 import backgroundImage from "../../../assets/arts/background-adroad.png";
 import Icon from "../../../assets/svgs/Logo.svg";
 import tokenManager from "../../Utils/tokenManager";
+import Loanding from "../../Loading/Index/Loading";
 import { timeMs } from "../../Utils/Utils";
 import styles from "../Stylesheet/styleRegister";
 const apiUrl = "https://adroad-api.onrender.com";
@@ -45,8 +46,8 @@ export default function Register() {
       return;
     }
     if (sessionToken.token === "" || sessionToken.issuedAt > timeMs(120)) {
-      Alert.alert(`Entrando Novamente!`, `Redirecionando Para Login…`);
       navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+      Loanding
     }
     if (
       sessionToken.issuedAt <= timeMs(120) &&

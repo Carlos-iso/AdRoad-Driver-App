@@ -9,8 +9,8 @@ export function timeMs(seg: number): number {
 }
 export async function fetchDataApi(
     url: string,
-    addMethod: string = addMethod,
-    addHeader: Record<string, string> = addHeader,
+    addMethod: string,
+    addHeader: Record<string, string>,
     addBody: object | null = null
 ): Promise<Data> {
     try {
