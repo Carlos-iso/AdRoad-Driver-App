@@ -1,5 +1,5 @@
 export type RootStackParamList = {
-  SplashScreen: undefined;
+  SplashAdRoad: undefined;
   UserSelect: undefined;
   Login: undefined;
   Register: undefined;

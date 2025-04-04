@@ -18,24 +18,24 @@ import Icon from "../../../assets/svgs/Logo.svg";
 import tokenManager from "../../Utils/tokenManager";
 import { timeMs } from "../../Utils/Utils";
 
-type RegisterScreenNavigationProp = StackNavigationProp<
+type UserSelectNavigationProp = StackNavigationProp<
   RootStackParamList,
   "UserSelect"
 >;
 export default function UserSelect() {
-  const navigation = useNavigation<RegisterScreenNavigationProp>();
+  const navigation = useNavigation<UserSelectNavigationProp>();
   return (
     <View style={styles.container}>
       <Image source={backgroundImage} style={styles.fundo} resizeMode="cover" />
       <View style={styles.filtro} />
       <View style={styles.conteudo}>
-        <TouchableOpacity style={styles.driverSelect} onPress={() => navigation.navigate("Register")}>
-          <Ionicons name="speedometer" size={64} color={"#FFF"} />
-          <Text style={styles.textSelect}>Motorista</Text>
+        <TouchableOpacity style={styles.optionSelect} onPress={() => navigation.navigate("Register")}>
+          <Ionicons name="speedometer" size={64} color={"#000"} />
+          <Text style={styles.textSelect}>Sou Motorista</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.driverSelect}>
-          <Ionicons name="business-outline" size={64} color={"#FFF"} />
-          <Text style={styles.textSelect}>Anunciante</Text>
+        <TouchableOpacity style={styles.optionSelect}>
+          <Ionicons name="business-outline" size={64} color={"#000"} />
+          <Text style={styles.textSelect}>Sou Anunciante</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -66,19 +66,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    gap: 24
   },
-  driverSelect: {
-    width: 150,
-    height: 150,
+  optionSelect: {
+    width: 300,
+    height: 300,
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    margin: 20,
+    padding: 24,
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    borderRadius: 24
   },
   textSelect: {
     fontSize: 18,
-    color: "#FFF",
+    fontFamily: "Jura_700Bold",
+    color: "#000",
     marginTop: 10,
   },
 });
