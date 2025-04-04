@@ -3,7 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../routes/types";
 import { View, Text, Animated, StyleSheet, Easing } from "react-native";
-import { SplashScreen } from "react-native-splash-screen"
+import SplashScreen from "react-native-splash-screen";
 import { Svg, Path } from "react-native-svg";
 
 type SplashAdRoadNavigationProp = StackNavigationProp<
