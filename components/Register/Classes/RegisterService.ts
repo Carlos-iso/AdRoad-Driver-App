@@ -2,16 +2,15 @@ import { Alert } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../routes/types";
 type RegisterScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  "Register"
+    RootStackParamList,
+    "Register"
 >;
 interface RegisterServiceParams {
     apiUrl: string;
     navigation: RegisterScreenNavigationProp;
     Alert: typeof Alert;
 }
-
-export default class    RegisterService {
+export default class RegisterService {
     private apiUrl: string;
     private navigation: RegisterServiceParams["navigation"];
     private Alert: typeof Alert;
