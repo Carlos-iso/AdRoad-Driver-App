@@ -54,14 +54,14 @@ export default class AuthService {
     });
     return this.handleResponse(response);
   }
-  // // Método para definir o token após login (opcional)
+  // // Metodo para definir o token após login (opcional)
   // public static setAuthToken(token: string): void {
   //   // Implementação de armazenamento do token
   //   // Exemplo com AsyncStorage ou contexto global
   //   globalThis.authToken = token;
   // }
 
-  // // Método para obter headers autenticados (opcional)
+  // // Metodo para obter headers autenticados (opcional)
   // public static getAuthHeaders(): Record<string, string> {
   //   return {
   //     'Authorization': `Bearer ${globalThis.authToken}`,

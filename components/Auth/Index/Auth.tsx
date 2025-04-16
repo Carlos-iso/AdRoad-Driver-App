@@ -5,10 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../routes/types";
+import AuthService from "../Classes/AuthService";
+import TokenManager  from "../../Utils/tokenManager.ts";
 import { Ionicons } from "@expo/vector-icons";
 type AuthNavigationProp = StackNavigationProp<RootStackParamList, "Auth">;
 export default function AuthScreen() {
@@ -16,6 +19,7 @@ export default function AuthScreen() {
   const navigation = useNavigation<AuthNavigationProp>();
   const { userType } = route.params as { userType: "driver" | "advertiser" };
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -23,7 +27,7 @@ export default function AuthScreen() {
     confirmPassword: "",
     cnpj: "",
   });
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validação de campos obrigatórios
     const requiredFields = {
       ...(!isLogin && {
@@ -100,7 +104,43 @@ export default function AuthScreen() {
             cnpj: formData.cnpj,
           }; // Cadastro anunciante
     console.log("Dados enviados:", dataToSubmit);
-    // Aqui você faria a chamada à API para login/registro
+    // Exibir Loading
+    setIsLoading(true);
+    // Chamada API
+    try {
+      let response;
+      const baseData = {
+        email: formData.email.trim(),
+        password: formData.password,
+        ...(userType === "advertiser" && { cnpj: formData.cnpj.replace(/\D/g, '') })
+      };
+      if (isLogin) {
+        response = userType === "driver"
+          ? await AuthService.loginDriver(baseData)
+          : await AuthService.loginAdvertiser(baseData as { email: string; password: string; cnpj: string });
+      } else {
+        const registrationData = userType === "driver"
+          ? { ...baseData, name: formData.name.trim() }
+          : { ...baseData, name_enterprise: formData.name.trim() };
+        response = userType === "driver"
+          ? await AuthService.registerDriver(registrationData)
+          : await AuthService.registerAdvertiser(registrationData);
+      }
+      console.log("Hello");
+      console.log(`Aqui ${Object.values(response)}`)
+      // Armazena o token recebido
+      if (response.token) {
+        await TokenManager.saveToken(response);
+        // Navega para a tela principal após login/cadastro bem-sucedido
+        navigation.navigate("Auth", { userType });
+      }
+      console.log("Resposta da API:", response);
+    } catch (error) {
+      console.error("Erro na autenticação:", error);
+      Alert.alert("Erro", error.message || "Ocorreu um erro durante a autenticação");
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <View style={styles.container}>

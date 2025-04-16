@@ -1,27 +1,60 @@
 import * as SecureStore from "expo-secure-store";
 const API_BASE_URL = "https://adroad-api.onrender.com";
-type UserData = {
+type UserType = 'driver' | 'advertiser';
+type DriverData = {
   id: string;
   name: string;
   email: string;
   createdAt: string;
 };
+type AdvertiserData = {
+  id: string;
+  name_enterprise: string;
+  email: string;
+  cnpj: string;
+  createdAt: string;
+};
+type UserData = DriverData | AdvertiserData;
 type TokenData = {
   token: string;
   issuedAt: number;
   userData: UserData;
+  userType: UserType;
 };
-class TokenManager {
+export default class TokenManager {
   private static readonly TOKEN_KEY = "token";
-  private static readonly ISSUED_AT_KEY = "issuedAt";
-  private static readonly USER_DATA_KEY = "userData";
+  private static readonly ISSUED_AT = "issuedAt";
+  private static readonly USER_DATA = "userData";
+  private static readonly USER_TYPE = "userType";
+  // Armazena os tokens localmente
+  public async saveToken(tokenData: TokenData): Promise<void> {
+    if (!tokenData.token || !tokenData.issuedAt || !tokenData.userData) {
+      throw new Error("Dados incompletos para salvar o token");
+    }
+    try {
+      await Promise.all([
+        SecureStore.setItemAsync(TokenManager.TOKEN_KEY, tokenData.token),
+        SecureStore.setItemAsync(
+          TokenManager.ISSUED_AT,
+          tokenData.issuedAt
+        ),
+        SecureStore.setItemAsync(
+          TokenManager.USER_DATA,
+          JSON.stringify(userData)
+        ),
+      ]);
+    } catch (error) {
+      console.error("Erro ao salvar token:", error);
+      throw new Error("Failed to save token");
+    }
+  }
   // Remove todos os tokens armazenados
   public async removeToken(): Promise<void> {
     try {
       await Promise.all([
         SecureStore.deleteItemAsync(TokenManager.TOKEN_KEY),
-        SecureStore.deleteItemAsync(TokenManager.ISSUED_AT_KEY),
-        SecureStore.deleteItemAsync(TokenManager.USER_DATA_KEY),
+        SecureStore.deleteItemAsync(TokenManager.ISSUED_AT),
+        SecureStore.deleteItemAsync(TokenManager.USER_DATA),
       ]);
       console.log("Tokens removidos com sucesso");
     } catch (error) {
@@ -55,8 +88,8 @@ class TokenManager {
     try {
       const [token, issuedAt, userData] = await Promise.all([
         SecureStore.getItemAsync(TokenManager.TOKEN_KEY),
-        SecureStore.getItemAsync(TokenManager.ISSUED_AT_KEY),
-        SecureStore.getItemAsync(TokenManager.USER_DATA_KEY),
+        SecureStore.getItemAsync(TokenManager.ISSUED_AT),
+        SecureStore.getItemAsync(TokenManager.USER_DATA),
       ]);
       if (!token || !issuedAt || !userData) {
         return null;
@@ -76,33 +109,7 @@ class TokenManager {
       return null;
     }
   }
-  // Armazena os tokens localmente
-  public async saveToken(
-    token: string,
-    issuedAt: number,
-    userData: UserData
-  ): Promise<void> {
-    if (!token || !issuedAt || !userData) {
-      throw new Error("Dados incompletos para salvar o token");
-    }
-    try {
-      await Promise.all([
-        SecureStore.setItemAsync(TokenManager.TOKEN_KEY, token),
-        SecureStore.setItemAsync(
-          TokenManager.ISSUED_AT_KEY,
-          issuedAt.toString()
-        ),
-        SecureStore.setItemAsync(
-          TokenManager.USER_DATA_KEY,
-          JSON.stringify(userData)
-        ),
-      ]);
-    } catch (error) {
-      console.error("Erro ao salvar token:", error);
-      throw new Error("Failed to save token");
-    }
-  }
-  // Método adicional para obter headers de autenticação
+  // Metodo adicional para obter headers de autenticação
   public async getAuthHeaders(): Promise<Record<string, string>> {
     const tokenData = await this.getToken();
     return {
@@ -116,5 +123,3 @@ class TokenManager {
     return !!tokenData;
   }
 }
-// Exporta uma instância singleton
-export default new TokenManager();
