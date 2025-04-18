@@ -13,7 +13,7 @@ import { getStatusBarHeight } from "react-native-status-bar-height";
 import tokenManager from "../Utils/tokenManager";
 import Graphic from "./Graphic";
 const Profile = () => {
-  const { getTokenLocal } = tokenManager();
+  // const { getTokenLocal } = tokenManager();
   const [usuario, setUsuario] = useState({
     id: "",
     name: "",
@@ -22,9 +22,9 @@ const Profile = () => {
   });
   const loadProfile = async () => {
     try {
-      const getProfileData = await getTokenLocal();
-      if (getProfileData?.userData) {
-        setUsuario(getProfileData.userData);
+      const getProfileData = await tokenManager.getToken()
+      if (getProfileData?.dataUser) {
+        setUsuario(getProfileData.dataUser);
       }
     } catch (err) {
       console.error(err);

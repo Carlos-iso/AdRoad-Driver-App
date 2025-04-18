@@ -1,6 +1,9 @@
 import * as SecureStore from "expo-secure-store";
 const API_BASE_URL = "https://adroad-api.onrender.com";
-type UserType = 'driver' | 'advertiser';
+type TokenKey = {
+  token: string;
+  expiresAt: number
+}
 type DriverData = {
   id: string;
   name: string;
@@ -14,34 +17,30 @@ type AdvertiserData = {
   cnpj: string;
   createdAt: string;
 };
-type UserData = DriverData | AdvertiserData;
+type DataUser = DriverData | AdvertiserData;
+type UserType = "driver" | "advertiser";
 type TokenData = {
-  token: string;
-  issuedAt: number;
-  userData: UserData;
+  token: TokenKey;
+  dataUser: DataUser;
   userType: UserType;
 };
 export default class TokenManager {
   private static readonly TOKEN_KEY = "token";
-  private static readonly ISSUED_AT = "issuedAt";
-  private static readonly USER_DATA = "userData";
+  private static readonly DATA_USER = "dataUser";
   private static readonly USER_TYPE = "userType";
   // Armazena os tokens localmente
-  public async saveToken(tokenData: TokenData): Promise<void> {
-    if (!tokenData.token || !tokenData.issuedAt || !tokenData.userData) {
+  public static async saveToken(tokenData: TokenData): Promise<void> {
+    if (!tokenData.token || !tokenData.dataUser || !tokenData.userType) {
       throw new Error("Dados incompletos para salvar o token");
     }
     try {
       await Promise.all([
-        SecureStore.setItemAsync(TokenManager.TOKEN_KEY, tokenData.token),
+        SecureStore.setItemAsync(TokenManager.TOKEN_KEY, JSON.stringify(tokenData.token)),
         SecureStore.setItemAsync(
-          TokenManager.ISSUED_AT,
-          tokenData.issuedAt
+          TokenManager.DATA_USER,
+          JSON.stringify(tokenData.dataUser)
         ),
-        SecureStore.setItemAsync(
-          TokenManager.USER_DATA,
-          JSON.stringify(userData)
-        ),
+        SecureStore.setItemAsync(TokenManager.USER_TYPE, tokenData.userType),
       ]);
     } catch (error) {
       console.error("Erro ao salvar token:", error);
@@ -49,12 +48,12 @@ export default class TokenManager {
     }
   }
   // Remove todos os tokens armazenados
-  public async removeToken(): Promise<void> {
+  public static async removeLocaldb(): Promise<void> {
     try {
       await Promise.all([
         SecureStore.deleteItemAsync(TokenManager.TOKEN_KEY),
-        SecureStore.deleteItemAsync(TokenManager.ISSUED_AT),
-        SecureStore.deleteItemAsync(TokenManager.USER_DATA),
+        SecureStore.deleteItemAsync(TokenManager.DATA_USER),
+        SecureStore.deleteItemAsync(TokenManager.USER_TYPE),
       ]);
       console.log("Tokens removidos com sucesso");
     } catch (error) {
@@ -63,7 +62,7 @@ export default class TokenManager {
     }
   }
   // Verifica se o usuário ainda existe no servidor
-  public async verifyUser(id: string, token: string): Promise<boolean> {
+  public static async verifyUser(id: string, token: string): Promise<boolean> {
     try {
       const response = await fetch(`${API_BASE_URL}/driver/${id}`, {
         method: "GET",
@@ -73,7 +72,7 @@ export default class TokenManager {
         },
       });
       if (!response.ok) {
-        await this.removeToken();
+        this.removeLocaldb();
         return false;
       }
       const data = await response.json();
@@ -83,42 +82,46 @@ export default class TokenManager {
       return false;
     }
   }
+  public static removeToken() {
+    throw new Error("Method not implemented.");
+  }
   // Obtém os tokens armazenados
-  public async getToken(): Promise<TokenData | null> {
+  public static async getToken(): Promise<TokenData | null> {
     try {
-      const [token, issuedAt, userData] = await Promise.all([
+      const [token, dataUser, userType] = await Promise.all([
         SecureStore.getItemAsync(TokenManager.TOKEN_KEY),
-        SecureStore.getItemAsync(TokenManager.ISSUED_AT),
-        SecureStore.getItemAsync(TokenManager.USER_DATA),
+        SecureStore.getItemAsync(TokenManager.DATA_USER),
+        SecureStore.getItemAsync(TokenManager.USER_TYPE),
       ]);
-      if (!token || !issuedAt || !userData) {
+      if (!token || !dataUser || !userType) {
         return null;
       }
-      const parsedUserData: UserData = JSON.parse(userData);
-      const isValidUser = await this.verifyUser(parsedUserData.id, token);
+      const parsedToken: TokenKey = JSON.parse(token);
+      const parsedDataUser: DataUser = JSON.parse(dataUser);
+      const isValidUser = await this.verifyUser(parsedDataUser.id, token);
       if (!isValidUser) {
         return null;
       }
       return {
-        token,
-        issuedAt: parseInt(issuedAt),
-        userData: parsedUserData,
+        token: parsedToken,
+        dataUser: parsedDataUser,
+        userType: userType as UserType
       };
     } catch (error) {
-      console.error("Erro ao obter token:", error);
+      console.error("Erro ao obter token local:", error);
       return null;
     }
   }
   // Metodo adicional para obter headers de autenticação
-  public async getAuthHeaders(): Promise<Record<string, string>> {
+  public static async getAuthHeaders(): Promise<Record<string, string>> {
     const tokenData = await this.getToken();
     return {
       "Content-Type": "application/json",
-      ...(tokenData ? { "x-access-token": tokenData.token } : {}),
+      ...(tokenData ? { "x-access-token": tokenData.token.token } : {}),
     };
   }
   // Verifica se o usuário está autenticado
-  public async isAuthenticated(): Promise<boolean> {
+  public static async isAuthenticated(): Promise<boolean> {
     const tokenData = await this.getToken();
     return !!tokenData;
   }
