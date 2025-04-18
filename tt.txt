@@ -1,1 +1,112 @@
-n)
+Directory structure:
+└── carlos-iso-adroad-driver-app/
+    ├── README.md
+    ├── app.json
+    ├── App.tsx
+    ├── declarations.d.ts
+    ├── index.ts
+    ├── LICENSE
+    ├── metro.config.js
+    ├── package.json
+    ├── tsconfig.json
+    ├── tt.txt
+    ├── .hintrc
+    ├── .snippets.snippet
+    ├── assets/
+    │   ├── arts/
+    │   ├── components/
+    │   │   ├── Home/
+    │   │   │   ├── Home.tsx
+    │   │   │   └── StyleHome.tsx
+    │   │   ├── Login/
+    │   │   │   └── Login.tsx
+    │   │   ├── Profile/
+    │   │   │   ├── Graphic.tsx
+    │   │   │   ├── Platforms.tsx
+    │   │   │   └── Profile.tsx
+    │   │   ├── Register/
+    │   │   │   └── Register.tsx
+    │   │   ├── SplashScreen/
+    │   │   │   └── SplashScreen.tsx
+    │   │   └── Utils/
+    │   │       ├── tokenManager.ts
+    │   │       └── Utils.ts
+    │   ├── default-icons/
+    │   └── svgs/
+    ├── components/
+    │   ├── Adapter/
+    │   │   └── AdapterApi.ts
+    │   ├── Auth/
+    │   │   ├── Classes/
+    │   │   │   └── AuthService.ts
+    │   │   └── Index/
+    │   │       └── Auth.tsx
+    │   ├── Classes/
+    │   │   ├── CNPJ.ts
+    │   │   ├── Email.ts
+    │   │   ├── Name.ts
+    │   │   └── Password.ts
+    │   ├── Home/
+    │   │   ├── Classes/
+    │   │   │   └── Email.ts
+    │   │   ├── Index/
+    │   │   │   └── Home.tsx
+    │   │   └── Stylesheet/
+    │   │       └── StyleHome.tsx
+    │   ├── Loading/
+    │   │   ├── Index/
+    │   │   │   └── Loading.tsx
+    │   │   └── Stylesheet/
+    │   │       └── styleLogin.ts
+    │   ├── Login/
+    │   │   ├── rascunho.json
+    │   │   ├── rascunho.ts
+    │   │   ├── Index/
+    │   │   │   └── Login.tsx
+    │   │   └── Stylesheet/
+    │   │       └── styleLogin.ts
+    │   ├── Profile/
+    │   │   ├── AdPreview.tsx
+    │   │   ├── Graphic.tsx
+    │   │   ├── Platforms.tsx
+    │   │   └── Profile.tsx
+    │   ├── Register/
+    │   │   ├── rascunho.ts
+    │   │   ├── Classes/
+    │   │   │   └── RegisterService.ts
+    │   │   ├── Index/
+    │   │   │   └── Register.tsx
+    │   │   └── Stylesheet/
+    │   │       └── styleRegister.ts
+    │   ├── SplashScreen/
+    │   │   └── Index/
+    │   │       └── SplashScreen.tsx
+    │   ├── UserSelect/
+    │   │   └── Index/
+    │   │       ├── Rascunho.tsx
+    │   │       └── UserSelect.tsx
+    │   ├── Utils/
+    │   │   ├── tokenManager.ts
+    │   │   └── Utils.ts
+    │   └── Validation/
+    │       └── fluentValidator.ts
+    ├── routes/
+    │   ├── index.tsx
+    │   ├── stack.routes.tsx
+    │   ├── tab.routes.tsx
+    │   └── types.ts
+    └── shim/
+        └── emptyModule.js
+
+
+features/
+└── auth/
+    ├── components/        # Componentes específicos de auth
+    │   ├── LoginForm.tsx
+    │   └── RegisterForm.tsx
+    ├── hooks/
+    │   └── useAuth.ts     # Hook customizado para auth
+    ├── services/
+    │   ├── AuthService.ts # Lógica de autenticação
+    │   └── tokenManager.ts
+    └── types/             # Tipos específicos
