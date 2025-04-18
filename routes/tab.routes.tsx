@@ -1,11 +1,9 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 //Screans
-import Home from "../components/Home/Index/Home";
+import DriverHome from "../components/DriverHome/Index/DriverHome";
 import Profile from "../components/Profile/Profile";
-
 const Tab = createBottomTabNavigator();
-
 export default function MenuTabsRoutes() {
     return (
         <Tab.Navigator
@@ -17,8 +15,8 @@ export default function MenuTabsRoutes() {
             }}
         >
             <Tab.Screen
-                name='HomeTabs'
-                component={Home}
+                name='DriverHome'
+                component={DriverHome}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Feather name='home' size={size} color={color} />

@@ -2,23 +2,23 @@ import * as SecureStore from "expo-secure-store";
 const API_BASE_URL = "https://adroad-api.onrender.com";
 type TokenKey = {
   token: string;
-  expiresAt: number
-}
-type DriverData = {
+  expiresAt: number;
+};
+export type DriverData = {
   id: string;
   name: string;
   email: string;
   createdAt: string;
 };
-type AdvertiserData = {
+export type AdvertiserData = {
   id: string;
   name_enterprise: string;
   email: string;
   cnpj: string;
   createdAt: string;
 };
-type DataUser = DriverData | AdvertiserData;
-type UserType = "driver" | "advertiser";
+export type DataUser = DriverData | AdvertiserData;
+export type UserType = "driver" | "advertiser";
 type TokenData = {
   token: TokenKey;
   dataUser: DataUser;
@@ -35,7 +35,10 @@ export default class TokenManager {
     }
     try {
       await Promise.all([
-        SecureStore.setItemAsync(TokenManager.TOKEN_KEY, JSON.stringify(tokenData.token)),
+        SecureStore.setItemAsync(
+          TokenManager.TOKEN_KEY,
+          JSON.stringify(tokenData.token)
+        ),
         SecureStore.setItemAsync(
           TokenManager.DATA_USER,
           JSON.stringify(tokenData.dataUser)
@@ -105,7 +108,7 @@ export default class TokenManager {
       return {
         token: parsedToken,
         dataUser: parsedDataUser,
-        userType: userType as UserType
+        userType: userType as UserType,
       };
     } catch (error) {
       console.error("Erro ao obter token local:", error);

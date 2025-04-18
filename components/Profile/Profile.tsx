@@ -10,21 +10,28 @@ import {
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../../assets/arts/background-adroad.png";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import tokenManager from "../Utils/tokenManager";
+import tokenManager, { DataUser } from "../Utils/tokenManager";
 import Graphic from "./Graphic";
 const Profile = () => {
   // const { getTokenLocal } = tokenManager();
-  const [usuario, setUsuario] = useState({
-    id: "",
-    name: "",
-    email: "",
-    createdAt: "",
-  });
+  const [usuario, setUsuario] = useState<{
+    id: string;
+    displayName: string;
+    email: string;
+    createdAt: string;
+  } | null>(null);
   const loadProfile = async () => {
     try {
-      const getProfileData = await tokenManager.getToken()
+      const getProfileData = await tokenManager.getToken();
       if (getProfileData?.dataUser) {
-        setUsuario(getProfileData.dataUser);
+        const userData: DataUser = getProfileData.dataUser;
+        setUsuario({
+          id: userData.id,
+          displayName:
+            "name" in userData ? userData.name : userData.name_enterprise,
+          email: userData.email,
+          createdAt: userData.createdAt,
+        });
       }
     } catch (err) {
       console.error(err);
@@ -36,7 +43,7 @@ const Profile = () => {
   return (
     <View style={styles.containerProfile}>
       <StatusBar translucent={true} backgroundColor="transparent" />
-      <Image source={backgroundImage} style={styles.fundo} resizeMode="cover"/>
+      <Image source={backgroundImage} style={styles.fundo} resizeMode="cover" />
       <View style={styles.filtro} />
       <View style={styles.mainProfileCard}>
         <View style={styles.profileCard}>
@@ -45,7 +52,9 @@ const Profile = () => {
           </View>
           <View style={styles.profileInfo}>
             <View style={styles.profileInfoDivision}>
-              <Text style={styles.profileInfoName}>Nome: {usuario?.name}</Text>
+              <Text style={styles.profileInfoName}>
+                Nome: {usuario?.displayName}
+              </Text>
               <Text style={styles.profileInfoId}>ID: {usuario?.id}</Text>
             </View>
             <View style={styles.profileInfoDivision}>

@@ -161,7 +161,7 @@ export default function AuthScreen() {
         });
         navigation.reset({
           index: 0,
-          routes: [{ name: "Home" }],
+          routes: [{ name: "DriverHome" }],
         });
         setTimeout(() => {
           alert(`Bem Vindo ${response.dataUser.name | response.dataUser.name_enterprise}`)
@@ -249,7 +249,7 @@ export default function AuthScreen() {
         disabled={isLoading}
       >
         {isLoading ? (
-          <Loading />
+          <Loading size={13*2} color="#FFFFFF" bgColor="#FFFFFF" strokeWidth={7}/>
         ) : (
           <Text style={styles.buttonText}>
             {isLogin ? "Entrar" : "Cadastrar"}

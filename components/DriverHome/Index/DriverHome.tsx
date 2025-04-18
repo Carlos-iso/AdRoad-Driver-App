@@ -16,7 +16,7 @@ import LogoIcon from "../../../assets/svgs/logo-black.svg";
 import UberIcon from "../../../assets/svgs/uber_icon.svg";
 import styles from "../Stylesheet/StyleHome";
 const { width } = Dimensions.get("window");
-const Home = () => {
+const DriverHome = () => {
   const adUrl =
     "https://atacadaobr.vtexassets.com/assets/vtex.file-manager-graphql/images/ae4c17a0-f1e6-45d5-b3a8-c097e055fa09___38b833a1b30024fdf37510ac2578a542.jpg";
   const [userName] = useState("Carlos");
@@ -83,4 +83,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default DriverHome;

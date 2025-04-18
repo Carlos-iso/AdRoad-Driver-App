@@ -4,8 +4,6 @@ import MenuTabsRoutes from "./tab.routes";
 import SplashScreen from "../components/SplashScreen/Index/SplashScreen";
 import UserSelect from "../components/UserSelect/Index/UserSelect";
 import AuthScreen from "../components/Auth/Index/Auth";
-import Register from "../components/Register/Index/Register";
-import Login from "../components/Login/Index/Login";
 const Stack = createStackNavigator();
 export default function StackRoutes() {
     return (
@@ -22,9 +20,7 @@ export default function StackRoutes() {
                 component={AuthScreen}
                 options={{ headerShown: false }} // Ou customize o header
             />
-            <Stack.Screen name="Register" component={Register} />
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Home" component={MenuTabsRoutes} />
+            <Stack.Screen name="DriverHome" component={MenuTabsRoutes} />
         </Stack.Navigator>
     );
 }
