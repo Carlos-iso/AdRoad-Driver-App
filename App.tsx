@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { Text } from "react-native";
-import StackRoutes from "./routes/stack.routes";
+import StackRoutes from "./routes/DriverStack.routes";
 import { useFonts } from "expo-font";
 import { Jura_400Regular } from "@expo-google-fonts/jura";
 import { Jura_700Bold } from "@expo-google-fonts/jura";

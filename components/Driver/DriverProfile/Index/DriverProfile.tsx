@@ -8,10 +8,10 @@ import {
   StyleSheet,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import backgroundImage from "../../assets/arts/background-adroad.png";
+import backgroundImage from "../../../../assets/arts/background-adroad.png";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import tokenManager, { DataUser } from "../Utils/tokenManager";
-import Graphic from "./Graphic";
+import tokenManager, { DataUser } from "../../../Utils/tokenManager";
+import Graphic from "../../../Graphic/Index/Graphic";
 const Profile = () => {
   // const { getTokenLocal } = tokenManager();
   const [usuario, setUsuario] = useState<{

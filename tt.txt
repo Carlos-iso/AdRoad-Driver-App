@@ -110,3 +110,36 @@ features/
     │   ├── AuthService.ts # Lógica de autenticação
     │   └── tokenManager.ts
     └── types/             # Tipos específicos
+
+    {
+            Home ✔
+
+            title: "Perfil", ✔
+            icon: "user",
+            action: () => navigation.navigate("Profile")
+        },
+        {
+            title: "Saldo", ✔
+            value: `R$ ${balance.toFixed(2)}`,
+            icon: "dollar-sign",
+            action: () => navigation.navigate("Balance")
+            //É uma sub tela saldo
+            // {
+            //     title: "Investimento Total",
+            //     value: `R$ ${totalInvested.toFixed(2)}`,
+            //     icon: "trending-up",
+            //     action: () => navigation.navigate("Investments")
+            // },
+        },
+        {
+            title: "Anúncios", ✔
+            value: `${activeAds}/${totalAds} ativos`,
+            icon: "image",
+            action: () => navigation.navigate("AdsManagement")
+            //É uma sub tela anúncios
+            // {
+            //     title: "Criar Anúncio",
+            //     icon: "plus-circle",
+            //     action: () => navigation.navigate("CreateAd")
+            // },
+        },

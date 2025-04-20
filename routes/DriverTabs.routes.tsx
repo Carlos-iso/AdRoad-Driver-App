@@ -1,10 +1,10 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 //Screans
-import DriverHome from "../components/DriverHome/Index/DriverHome";
-import Profile from "../components/Profile/Profile";
+import DriverHome from "../components/Driver/DriverHome/Index/DriverHome";
+import Profile from "../components/Driver/DriverProfile/Index/DriverProfile";
 const Tab = createBottomTabNavigator();
-export default function MenuTabsRoutes() {
+export default function DriverTabs() {
     return (
         <Tab.Navigator
             screenOptions={{

@@ -3,5 +3,7 @@ export type RootStackParamList = {
   UserSelect: undefined;
   Auth: { userType: 'driver' | 'advertiser' };
   DriverHome: undefined;
+  DriverProfile: undefined;
   AdvertiserHome: undefined;
+  AdvertiserProfile: undefined;
 };
