@@ -10,4 +10,19 @@
     "issuedAt": 1740493587538,
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YmRjZjEzMTEzMGNmZWIyYmQ4YTA2NCIsIm5hbWUiOiJDYXJsb3MgU2lxdWVpcmEiLCJlbWFpbCI6ImNhcmxvc2JhbGFrMjAwMkBnbWFpbC5jb20iLCJyb2xlcyI6WyJ1c2VyIl0sImNyZWF0ZWRBdCI6IjIwMjUtMDItMjVUMTQ6MDk6MjMuMjQ0WiIsImlhdCI6MTc0MDQ5MzU4NywiZXhwIjoxNzQwNDk0NDg3fQ.1AZKukZLpmIIjGArOHl4F4VACXIt1tQijoLhOXl4ZDQ"
   }
+},
+
+{
+  "message": "Login Bem Sucedido!",
+  "token": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDRkYTA1ZjMxN2ViM2VmM2Q2ODBkZCIsIm5hbWVfZW50ZXJwcmlzZSI6IlRlc3RlIiwiY25waiI6IjE1LjU1NC44NDMvMDAwMS0wNyIsImVtYWlsIjoiY2FybG9zYmFsYWsxMjM0QGdtYWlsLmNvbSIsImNyZWF0ZWRBdCI6IjIwMjUtMDQtMjBUMTE6Mjc6MDEuNjgzWiIsImlhdCI6MTc0NTE1MDQ1NSwiZXhwIjoxNzQ1MTUxMzU1fQ.uuyn9IwyYK_vz36EgxQLYKDsIAkNZEZGHUebpl7BebA",
+    "expiresAt": 1745150455172
+  },
+  "dataUser": {
+    "id": "6804da05f317eb3ef3d680dd",
+    "name_enterprise": "Teste",
+    "cnpj": "15.554.843/0001-07",
+    "email": "carlosbalak1234@gmail.com",
+    "createdAt": "2025-04-20T11:27:01.683Z"
+  }
 }
