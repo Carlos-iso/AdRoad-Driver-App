@@ -1,10 +1,10 @@
 // AuthService.ts
-import TokenManager from "./TokenManager";
+import TokenManager from "../../Utils/tokenManager";
 // Tipos base
 export type MessageResponse = {
     message: string;
 };
-export type TokenData = {
+export type TokenKey = {
     token: string;
     expiresAt: number;
 };
@@ -26,7 +26,7 @@ export type AdvertiserProfile = {
 // Tipo unificado para resposta de autenticação
 export type AuthResponse<T extends UserType> = {
     message: MessageResponse;
-    token: TokenData;
+    token: TokenKey;
     dataUser: T extends "driver" ? DriverProfile : AdvertiserProfile;
 };
 // Tipo para credenciais de login
@@ -121,10 +121,10 @@ export class AuthService {
         response: AuthResponse<T>,
         userType: T
     ): Promise<void> {
-        await TokenManager.saveToken({
+        await TokenManager.saveAuthData({
             token: response.token,
-            user: response.dataUser, // Note que mudamos para dataUser para corresponder ao AuthResponse
-            userType
+            dataUser: response.dataUser, // Note que mudamos para dataUser para corresponder ao AuthResponse
+            userType: userType
         });
     }
     // Outros métodos úteis...
@@ -135,9 +135,9 @@ export class AuthService {
         user: DriverProfile | AdvertiserProfile;
         userType: UserType;
     } | null> {
-        const tokenData = await TokenManager.getToken();
-        return tokenData
-            ? { user: tokenData.user, userType: tokenData.userType }
+        const tokenKey = await TokenManager.getToken();
+        return tokenKey
+            ? { user: tokenKey.user, userType: tokenKey.userType }
             : null;
     }
 }

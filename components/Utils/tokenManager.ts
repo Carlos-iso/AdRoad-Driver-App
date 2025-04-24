@@ -1,157 +1,105 @@
+// TokenManager.ts
 import * as SecureStore from "expo-secure-store";
+import {
+    TokenKey,
+    DriverProfile,
+    AdvertiserProfile,
+    UserType
+} from "../Auth/Classes/AuthService";
 const API_BASE_URL = "https://adroad-api.onrender.com";
-type TokenKey = {
-    token: string;
-    expiresAt: number;
-};
-export type DriverData = {
-    id: string;
-    name: string;
-    email: string;
-    createdAt: string;
-};
-export type AdvertiserData = {
-    id: string;
-    name_enterprise: string;
-    email: string;
-    cnpj: string;
-    createdAt: string;
-};
-export type DataUser = DriverData | AdvertiserData;
-export type UserType = "driver" | "advertiser";
-export type TokenData = {
+export type StoredUserData = DriverProfile | AdvertiserProfile;
+// Tipos locais do TokenManager
+export type TokenDataLocal = {
     token: TokenKey;
-    dataUser: DataUser;
+    dataUser: StoredUserData;
     userType: UserType;
 };
 export default class TokenManager {
-    private static readonly TOKEN_KEY = "token";
-    private static readonly DATA_USER = "dataUser";
-    private static readonly USER_TYPE = "userType";
-    // Preara o token
+    private static readonly AUTH_DATA_KEY = "auth_data";
     /**
-     * Prepara os dados do token para serem salvos
-     * @param apiResponseToken Dados do token da API
-     * @param apiResponseUser Dados do usuário da API
-     * @param userType Tipo do usuário (driver ou advertiser)
+     * Salva os dados de autenticação
+     * @param authResponse Resposta da API de autenticação
+     * @param userType Tipo de usuário
      */
-    public static prepareTokenData(
-        apiResponseToken: object,
-        apiResponseUser: object,
-        userType: string
-    ): TokenData {
-        if (!apiResponseToken || !apiResponseUser || !userType) {
-            throw new Error("Dados incompletos para preparar o token");
-        }
-        return {
-            token: apiResponseToken,
-            dataUser: apiResponseUser,
-            userType: userType
-        };
-    }
-    public static async saveToken(tokenData: TokenData): Promise<void> {
-        if (!!tokenData.token || !!tokenData.dataUser || !!tokenData.userType) {
+    public static async saveAuthData<T extends UserType>(
+        authResponse: TokenDataLocal<T>,
+        userType: T
+    ): Promise<void> {
+        if (!authResponse.token || !authResponse.dataUser) {
             throw new Error("Dados incompletos para salvar o token");
         }
+        const dataToStore: TokenDataLocal = {
+            token: authResponse.token,
+            user: authResponse.dataUser,
+            userType: authResponse.userType
+        };
         try {
-            await Promise.all([
-                SecureStore.setItemAsync(
-                    TokenManager.TOKEN_KEY,
-                    JSON.stringify(tokenData.token)
-                ),
-                SecureStore.setItemAsync(
-                    TokenManager.DATA_USER,
-                    JSON.stringify(tokenData.dataUser)
-                ),
-                SecureStore.setItemAsync(
-                    TokenManager.USER_TYPE,
-                    tokenData.userType
-                )
-            ]);
+            await SecureStore.setItemAsync(
+                this.userType,
+                JSON.stringify(dataToStore)
+            );
         } catch (error) {
             console.error("Erro ao salvar token:", error);
             throw new Error("Failed to save token");
         }
     }
-    // Remove todos os tokens armazenados
-    public static async removeLocaldb(): Promise<void> {
+    // Remove os dados de autenticação
+    public static async clearAuthData(): Promise<void> {
         try {
-            await Promise.all([
-                SecureStore.deleteItemAsync(TokenManager.TOKEN_KEY),
-                SecureStore.deleteItemAsync(TokenManager.DATA_USER),
-                SecureStore.deleteItemAsync(TokenManager.USER_TYPE)
-            ]);
-            console.log("Tokens removidos com sucesso");
+            await SecureStore.deleteItemAsync(this.AUTH_DATA_KEY);
         } catch (error) {
-            console.error("Erro ao remover tokens:", error);
-            throw new Error("Failed to remove tokens");
+            console.error("Erro ao remover token:", error);
+            throw new Error("Failed to remove token");
+        }
+    }
+    // Obtém os dados de autenticação armazenados
+    public static async getAuthData(): Promise<TokenData | null> {
+        try {
+            const jsonValue = await SecureStore.getItemAsync(
+                this.AUTH_DATA_KEY
+            );
+            if (!jsonValue) return null;
+            const parsedData: TokenData = JSON.parse(jsonValue);
+            // Verifica se o usuário ainda é válido no servidor
+            const isValid = await this.verifyUser(
+                parsedData.user.id,
+                parsedData.token.token
+            );
+            return isValid ? parsedData : null;
+        } catch (error) {
+            console.error("Erro ao obter token:", error);
+            return null;
         }
     }
     // Verifica se o usuário ainda existe no servidor
-    public static async verifyUser(
+    private static async verifyUser(
         id: string,
         token: string
     ): Promise<boolean> {
         try {
-            const response = await fetch(`${API_BASE_URL}/driver/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/user/verify`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                     "x-access-token": token
                 }
             });
-            if (!response.ok) {
-                this.removeLocaldb();
-                return false;
-            }
-            const data = await response.json();
-            return !!data;
+            return response.ok;
         } catch (error) {
             console.error("Erro na verificação do usuário:", error);
             return false;
         }
     }
-    public static removeToken() {
-        throw new Error("Method not implemented.");
-    }
-    // Obtém os tokens armazenados
-    public static async getToken(): Promise<TokenData | null> {
-        try {
-            const [token, dataUser, userType] = await Promise.all([
-                SecureStore.getItemAsync(TokenManager.TOKEN_KEY),
-                SecureStore.getItemAsync(TokenManager.DATA_USER),
-                SecureStore.getItemAsync(TokenManager.USER_TYPE)
-            ]);
-            if (!token || !dataUser || !userType) {
-                return null;
-            }
-            const parsedToken: TokenKey = JSON.parse(token);
-            const parsedDataUser: DataUser = JSON.parse(dataUser);
-            const isValidUser = await this.verifyUser(parsedDataUser.id, token);
-            if (!isValidUser) {
-                return null;
-            }
-            return {
-                token: parsedToken,
-                dataUser: parsedDataUser,
-                userType: userType as UserType
-            };
-        } catch (error) {
-            console.error("Erro ao obter token local:", error);
-            return null;
-        }
-    }
-    // Metodo adicional para obter headers de autenticação
+    // Obtém headers de autenticação
     public static async getAuthHeaders(): Promise<Record<string, string>> {
-        const tokenData = await this.getToken();
+        const authData = await this.getAuthData();
         return {
             "Content-Type": "application/json",
-            ...(tokenData ? { "x-access-token": tokenData.token.token } : {})
+            ...(authData ? { "x-access-token": authData.token.token } : {})
         };
     }
     // Verifica se o usuário está autenticado
     public static async isAuthenticated(): Promise<boolean> {
-        const tokenData = await this.getToken();
-        return !!tokenData;
+        return !!(await this.getAuthData());
     }
 }
