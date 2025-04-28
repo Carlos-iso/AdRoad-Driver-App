@@ -1,9 +1,9 @@
-// TokenManager.ts
 import * as SecureStore from "expo-secure-store";
 import {
     TokenKey,
     DriverProfile,
     AdvertiserProfile,
+    AuthResponse,
     UserType
 } from "../Auth/Classes/AuthService";
 const API_BASE_URL = "https://adroad-api.onrender.com";
@@ -22,7 +22,7 @@ export default class TokenManager {
      * @param userType Tipo de usuário
      */
     public static async saveAuthData<T extends UserType>(
-        authResponse: TokenDataLocal<T>,
+        authResponse: AuthResponse<T>,
         userType: T
     ): Promise<void> {
         if (!authResponse.token || !authResponse.dataUser) {
@@ -30,7 +30,7 @@ export default class TokenManager {
         }
         const dataToStore: TokenDataLocal = {
             token: authResponse.token,
-            user: authResponse.dataUser,
+            dataUser: authResponse.dataUser,
             userType: authResponse.userType
         };
         try {

@@ -7,6 +7,22 @@ interface Data {
 export function timeMs(seg: number): number {
     return seg * 1000;
 }
+export function formatCNPJ(value: string): string {
+    // Remove tudo que não é dígito
+    const cleaned = value.replace(/\D/g, "");
+    // Aplica a formatação do CNPJ
+    const match = cleaned.match(
+        /^(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/
+    );
+    if (!match) return value;
+    return [
+        match[1],
+        match[2] ? `.${match[2]}` : "",
+        match[3] ? `.${match[3]}` : "",
+        match[4] ? `/${match[4]}` : "",
+        match[5] ? `-${match[5]}` : ""
+    ].join("");
+}
 export async function fetchDataApi(
     url: string,
     addMethod: string,

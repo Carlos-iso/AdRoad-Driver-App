@@ -59,7 +59,7 @@ export class AuthService {
      */
     static async login<T extends UserType>(
         credentials: LoginCredentials,
-        userType: T
+        userType: UserType
     ): Promise<AuthResponse<T>> {
         let endpoint = `${this.API_BASE_URL}/${userType}/login`;
         const body =
