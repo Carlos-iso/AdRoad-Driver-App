@@ -3,8 +3,8 @@ interface ErrorMessage {
 }
 export default class ValidationContract {
 	private errors: ErrorMessage[];
-	constructor() {
-		this.errors = [];
+	constructor(errors: ErrorMessage[] = []) {
+		this.errors = errors;
 	}
 	isRequired(value: string | null | undefined, message: string): void {
 		if (!value || value.length <= 0) {
@@ -39,15 +39,15 @@ export default class ValidationContract {
 			this.errors.push({ message });
 		}
 	}
-    hasMaxLenFilds(fields: object, max: number, message: string): string {
+	hasMaxLenFilds(fields: object, max: number, message: string): string {
 		const shortFields = Object.entries(fields).filter(
 			([key, value]) => value.length > max
 		);
 		if (shortFields.length > 0) {
-            return `${message}${shortFields.map(([key]) => key)}`;
+			return `${message}${shortFields.map(([key]) => key)}`;
 		} else {
-            return "";
-        }
+			return "";
+		}
 	}
 	isFixedLen(
 		value: string | null | undefined,
@@ -85,6 +85,11 @@ export default class ValidationContract {
 		// Compara os dígitos calculados com os dígitos informados
 		const calculatedCNPJ = cnpjWithoutDigits + firstDigit + secondDigit;
 		if (cleanedCNPJ !== calculatedCNPJ) {
+			this.errors.push({ message });
+		}
+	}
+	confirmKey(key: string, confirmKey: string, message: string): void {
+		if (key !== confirmKey) {
 			this.errors.push({ message });
 		}
 	}

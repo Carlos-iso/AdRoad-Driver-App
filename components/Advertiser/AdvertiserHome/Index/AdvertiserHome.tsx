@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,17 +8,37 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useFocusEffect, useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../../../routes/types";
+import TokenManager from '../../../Utils/tokenManager';
 import styles from "../Stylesheet/StyleAdvertiserHome";
 import backgroundImage from "../../../../assets/arts/background-adroad.png";
 import LogoIcon from "../../../../assets/svgs/logo-black.svg";
 import { Feather } from "@expo/vector-icons";
-const AdvertiserHome = () => {
+type AdvertiserHomeNavigationProp = StackNavigationProp<RootStackParamList, "AdvertiserHome">;
+export default function AdvertiserHome() {
   // Nome da tela vindo da navegação ou definido manualmente
   const [userName] = useState("Nome do Usuário");
   const [screenName] = useState("Home do Anunciante");
   const route = useRoute();
   const { userType } = route.params as { userType: "driver" | "advertiser" };
+  const [userData, setUserData] = useState(null);
+  const navigation = useNavigation<AdvertiserHomeNavigationProp>();
+  useFocusEffect(
+        useCallback(() => {
+            const loadData = async () => {
+                const authData = await TokenManager.getAuthData();
+                if (!authData) {
+                    // Redireciona para login se não houver dados
+                    navigation.replace('Auth', { userType: 'advertiser' });
+                    return;
+                }
+                setUserData(authData.dataUser);
+            };
+            loadData();
+        }, [])
+    );
   return (
     <View style={styles.containerHome}>
       <StatusBar translucent={true} backgroundColor="transparent" />
@@ -41,4 +61,3 @@ const AdvertiserHome = () => {
     </View>
   );
 };
-export default AdvertiserHome;
