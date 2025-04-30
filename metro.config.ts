@@ -9,7 +9,7 @@ module.exports = (async () => {
         ...config.transformer,
         babelTransformerPath: require.resolve("react-native-svg-transformer")
     };
-    config.resolver.assetExts = assetExts.filter(ext => ext !== "svg");
+    config.resolver.assetExts = assetExts.filter((ext: string) => ext !== "svg");
     config.resolver.sourceExts = [...sourceExts, "svg"];
     // Sua configuração já existente para mapear "missing-asset-registry-path"
     config.resolver.extraNodeModules = {
