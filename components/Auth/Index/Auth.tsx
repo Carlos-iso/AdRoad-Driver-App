@@ -13,6 +13,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../routes/types";
 import ValidationContract from "../../Validation/fluentValidator";
+import { useAuth } from "../../contexts/AuthContext";
 import { AuthService } from "../Classes/AuthService";
 import TokenManager from "../../Utils/tokenManager";
 import { formatCNPJ } from "../../Utils/Utils";
@@ -22,7 +23,7 @@ type AuthNavigationProp = StackNavigationProp<RootStackParamList, "Auth">;
 export default function AuthScreen() {
     const route = useRoute();
     const navigation = useNavigation<AuthNavigationProp>();
-    const { userType } = route.params as { userType: "driver" | "advertiser" };
+    const { userType } = useAuth()
     const [isLogin, setIsLogin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
