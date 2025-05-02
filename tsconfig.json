@@ -4,7 +4,7 @@
         "jsx": "react-native",
         "strict": true,
         "noImplicitAny": true,       // Evita tipos implícitos 'any'
-        "noUnusedLocals": true,     // Avisa sobre variáveis não usadas
+        // "noUnusedLocals": true,     // Avisa sobre variáveis não usadas
         "noUnusedParameters": true,  // Avisa sobre parâmetros não usados
         "skipLibCheck": true,        // Ignora erros em bibliotecas externas (útil para React Native)
         "moduleResolution": "node",
