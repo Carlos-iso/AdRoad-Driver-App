@@ -1,0 +1,1 @@
+Tudo que é velho/lixo e pode ser ignorado pode vim para cá

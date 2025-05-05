@@ -19,6 +19,7 @@
     ],
     "exclude": [
         "node_modules",  // Ignora a pasta node_modules
+        "Old",         // Ignora a pasta Old
         "**/*.spec.ts"   // Ignora arquivos de teste (se houver)
     ]
 }

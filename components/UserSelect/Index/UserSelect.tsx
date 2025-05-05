@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../routes/types";
-import RegisterService from "../../Register/Classes/RegisterService";
+import RegisterService from "../../Old/Register/Classes/RegisterService";
 import { useAuth } from "../../contexts/AuthContext";
 import tokenManager from "../../Utils/tokenManager";
 import { timeMs } from "../../Utils/Utils";

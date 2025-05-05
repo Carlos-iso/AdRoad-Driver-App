@@ -10,7 +10,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../../../../assets/arts/background-adroad.png";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import tokenManager, { DataUser } from "../../../Utils/tokenManager";
+import tokenManager, { TokenDataLocal } from "../../../Utils/tokenManager";
 import Graphic from "../../../Graphic/Index/Graphic";
 const Profile = () => {
   // const { getTokenLocal } = tokenManager();
@@ -22,9 +22,9 @@ const Profile = () => {
   } | null>(null);
   const loadProfile = async () => {
     try {
-      const getProfileData = await tokenManager.getToken();
+      const getProfileData = await tokenManager.getAuthData();
       if (getProfileData?.dataUser) {
-        const userData: DataUser = getProfileData.dataUser;
+        const userData: TokenDataLocal = getProfileData.dataUser;
         setUsuario({
           id: userData.id,
           displayName:

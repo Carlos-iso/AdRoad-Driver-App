@@ -12,11 +12,11 @@ import {
     StatusBar,
     Alert
 } from "react-native";
-import { RootStackParamList } from "../../../routes/types"; // Importe os tipos
+import { RootStackParamList } from "../../../../routes/types"; // Importe os tipos
 import backgroundImage from "../../../assets/arts/background-adroad.png";
 import Icon from "../../../assets/svgs/Logo.svg";
-import tokenManager from "../../Utils/tokenManager";
-import { timeMs } from "../../Utils/Utils";
+import tokenManager from "../../../Utils/tokenManager";
+import { timeMs } from "../../../Utils/Utils";
 const apiUrl = "https://adroad-api.onrender.com";
 type RegisterScreenNavigationProp = StackNavigationProp<
     RootStackParamList,

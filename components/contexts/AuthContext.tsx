@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import tokenManager from "../Utils/tokenManager";
 type UserType = "driver" | "advertiser";
 interface AuthContextData {
-	userType: UserType | null;
+	userType: UserType
 	setUserType: (type: UserType) => void;
 	isLoading: boolean;
 }
