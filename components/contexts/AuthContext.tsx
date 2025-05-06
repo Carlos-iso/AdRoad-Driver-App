@@ -11,12 +11,12 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({
 	children,
 }) => {
-	const [userType, setUserType] = useState<UserType | null>(null);
+	const [userType, setUserType] = useState<UserType>("driver");
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
 		const loadUserType = async () => {
 			const authData = await tokenManager.getAuthData();
-			setUserType(authData?.userType || null);
+			setUserType(authData?.userType || "driver");
 			setIsLoading(false);
 		};
 		loadUserType();

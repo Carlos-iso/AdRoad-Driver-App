@@ -17,9 +17,9 @@ export type TokenDataLocal = {
 export default class TokenManager {
     /**
      * Salva os dados de autenticação
-     * @param authResponse Resposta da API de autenticação
+     * @param authData Resposta da API de autenticação
      */
-    public static async saveAuthData<T extends UserType>(
+    public static async saveAuthData(
         authData: TokenDataLocal,
     ): Promise<void> {
         if (!authData.token || !authData.dataUser || !authData.userType) {

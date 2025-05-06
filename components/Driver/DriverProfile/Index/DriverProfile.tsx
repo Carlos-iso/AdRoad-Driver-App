@@ -11,6 +11,7 @@ import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../../../../assets/arts/background-adroad.png";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import tokenManager, { TokenDataLocal } from "../../../Utils/tokenManager";
+import { DriverProfile, AdvertiserProfile } from "../../../Auth/Classes/AuthService";
 import Graphic from "../../../Graphic/Index/Graphic";
 const Profile = () => {
   // const { getTokenLocal } = tokenManager();
@@ -24,7 +25,7 @@ const Profile = () => {
     try {
       const getProfileData = await tokenManager.getAuthData();
       if (getProfileData?.dataUser) {
-        const userData: TokenDataLocal = getProfileData.dataUser;
+        const userData: DriverProfile | AdvertiserProfile = getProfileData.dataUser;
         setUsuario({
           id: userData.id,
           displayName:

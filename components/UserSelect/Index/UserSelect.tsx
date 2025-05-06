@@ -2,13 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../routes/types";
-import RegisterService from "../../Old/Register/Classes/RegisterService";
 import { useAuth } from "../../contexts/AuthContext";
-import tokenManager from "../../Utils/tokenManager";
-import { timeMs } from "../../Utils/Utils";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Icon from "../../../assets/svgs/Logo.svg";
 import backgroundImage from "../../../assets/arts/background-adroad.png";
 type UserSelectNavigationProp = StackNavigationProp<
     RootStackParamList,
