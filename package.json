@@ -9,7 +9,8 @@
         "ios": "expo start --ios",
         "web": "expo start --web",
         "pull": "git pull && npm ci",
-        "push": "git add . && git commit -m 'Fixx:_Auth_Continue_To_End' && git push origin main"
+        "push": "git add . && git commit -m 'Fixx:_type_command' && git push origin main",
+        "type": "tsc --watch --noEmit"
     },
     "dependencies": {
         "@expo-google-fonts/jura": "0.3.0",
