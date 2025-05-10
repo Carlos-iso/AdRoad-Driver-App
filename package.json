@@ -9,8 +9,9 @@
         "ios": "expo start --ios",
         "web": "expo start --web",
         "pull": "git pull && npm ci",
-        "push": "git add . && git commit -m 'Chore:_userType_Undefined' && git push origin main",
-        "type": "tsc --watch --noEmit"
+        "push": "git add . && git commit -m 'Fix:_Types' && git push origin main",
+        "type": "tsc --noEmit",
+        "type-watch": "tsc --watch --noEmit"
     },
     "dependencies": {
         "@expo-google-fonts/jura": "0.3.0",
