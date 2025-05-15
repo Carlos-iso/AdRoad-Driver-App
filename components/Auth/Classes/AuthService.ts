@@ -1,5 +1,5 @@
 // AuthService.ts
-import TokenManager, { TokenDataLocal } from "../../Utils/tokenManager";
+import TokenManager, { TokenDataLocal } from "../../Utils/tokenManager.ts";
 // Import tipos
 import {
   MessageResponse,

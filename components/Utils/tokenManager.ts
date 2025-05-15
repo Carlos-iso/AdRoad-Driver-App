@@ -5,7 +5,7 @@ import {
   AdvertiserProfile,
   AuthResponse,
   UserType,
-} from "../Auth/Classes/AuthService";
+} from "../../types/TypesAuthService.ts";
 import { useAuth } from "../contexts/AuthContext";
 const API_BASE_URL = "https://adroad-api.onrender.com";
 // Tipos locais do TokenManager

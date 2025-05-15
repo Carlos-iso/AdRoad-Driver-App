@@ -39,7 +39,7 @@ export default function AdvertiserHome() {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        const authData = await TokenManager.getAuthData();
+        var authData = await TokenManager.getAuthData();
         if (!authData) {
           navigation.replace("Auth", { userType: "advertiser" });
           return;
@@ -48,8 +48,6 @@ export default function AdvertiserHome() {
       } catch (error) {
         console.error("Failed to load user data:", error);
         navigation.replace("Auth", { userType: "advertiser" });
-      } finally {
-        setIsLoading(false);
       }
     };
     loadUserData();
