@@ -3,10 +3,8 @@ import {
   TokenKey,
   DriverProfile,
   AdvertiserProfile,
-  AuthResponse,
   UserType,
-} from "../../types/TypesAuthService.ts";
-import { useAuth } from "../contexts/AuthContext";
+} from "../../types/TypesAuthService";
 const API_BASE_URL = "https://adroad-api.onrender.com";
 // Tipos locais do TokenManager
 export type TokenDataLocal = {

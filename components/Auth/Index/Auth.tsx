@@ -4,26 +4,22 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   Alert
 } from "react-native";
-import styles from "../Stylesheet/StyleAuth";
 import Loading from "../../Loading/Index/Loading";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../routes/types";
 import ValidationContract from "../../Validation/fluentValidator";
 import { useAuth } from "../../contexts/AuthContext";
 import { AuthService } from "../Classes/AuthService";
+import { CNPJ } from "../../Classes/CNPJ";
 import TokenManager from "../../Utils/tokenManager";
-import { formatCNPJ } from "../../Utils/Utils";
-import { navigateToHome } from "../../Utils/navigationHelpers";
+import { normalizerCNPJ, formatCNPJ } from "../../Utils/Utils";
 import { Ionicons } from "@expo/vector-icons";
-import AdvertiserHome from "../../Advertiser/AdvertiserHome/Index/AdvertiserHome.tsx"
-import DriverHome from "../../Driver/DriverHome/Index/DriverHome.tsx"
+import styles from "../Stylesheet/StyleAuth";
 type AuthNavigationProp = StackNavigationProp<RootStackParamList, "Auth">;
 export default function AuthScreen() {
-  const route = useRoute();
   const navigation = useNavigation<AuthNavigationProp>();
   const { userType } = useAuth()
   const [isLogin, setIsLogin] = useState(true);
@@ -32,9 +28,13 @@ export default function AuthScreen() {
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    cnpj: ""
+    confirmPassword: ""
   });
+  const [cnpjFormData, setCnpjFormData] = useState({
+    cnpjRoot: 0,
+    cnpjHeadquarters: 0,
+    cnpjVerifier: 0
+  })
   const [errors, setErrors] = useState<Record<string, string>>({});
   // Live validate
   const validateField = (field: string, value: string) => {
@@ -53,8 +53,11 @@ export default function AuthScreen() {
         contract.hasMaxLen(value, 20, "Nome muito longo");
         break;
       case "cnpj":
+        const cnpjValidator = new CNPJ(cnpjFormData);
+console.log(cnpjValidator);
+        
         if (userType === "advertiser") {
-          contract.isCNPJ(value, "CNPJ inválido");
+          contract.isCNPJ(cnpjFormData, "CNPJ inválido");
         }
         break;
       case "confirmPassword":
@@ -127,7 +130,7 @@ export default function AuthScreen() {
       }
       // Validação de CNPJ para anunciante
       if (userType === "advertiser") {
-        contract.isCNPJ(formData.cnpj, "CNPJ inválido");
+        contract.isCNPJ(cnpjFormData, "CNPJ inválido");
       }
     }
     // Verifica se há erros
@@ -154,7 +157,7 @@ export default function AuthScreen() {
             }
             : {
               name_enterprise: formData.name,
-              cnpj: formData.cnpj,
+              cnpj: cnpjFormData,
               email: formData.email,
               password: formData.password
             };
@@ -250,9 +253,9 @@ export default function AuthScreen() {
           <Text style={styles.label}>CNPJ</Text>
           <TextInput
             style={styles.input}
-            value={formData.cnpj}
+            value={normalizerCNPJ(cnpjFormData)}
             onChangeText={text =>
-              setFormData({ ...formData, cnpj: formatCNPJ(text) })
+              setCnpjFormData({ ...cnpjFormData })
             }
             placeholder="00.000.000/0000-00"
             keyboardType="numeric"

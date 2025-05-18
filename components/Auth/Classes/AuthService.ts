@@ -1,16 +1,10 @@
-// AuthService.ts
 import TokenManager, { TokenDataLocal } from "../../Utils/tokenManager.ts";
-// Import tipos
 import {
-  MessageResponse,
-  TokenKey,
   UserType,
   DriverProfile,
   AdvertiserProfile,
   AuthResponse,
   LoginCredentials,
-  DriverRegisterData,
-  AdvertiserRegisterData,
   RegisterData
 } from '../../../types/TypesAuthService';
 export class AuthService {

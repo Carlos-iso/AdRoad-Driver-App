@@ -1,3 +1,4 @@
+import { CNPJProps } from "../Classes/CNPJ";
 interface Data {
   id: number;
   token: string;
@@ -7,8 +8,15 @@ interface Data {
 export function timeMs(seg: number): number {
   return seg * 1000;
 }
-export function formatCNPJ(value: string): string {
+export function normalizerCNPJ(value: CNPJProps): string {
+  const { cnpjRoot, cnpjHeadquarters, cnpjVerifier } = value;
+  return `${cnpjRoot.toString().padStart(8, "0")}${cnpjHeadquarters
+    .toString()
+    .padStart(4, "0")}${cnpjVerifier.toString().padStart(2, "0")}`;
+}
+export function formatCNPJ(value: CNPJProps | string) /* Precisa definir um tipo especifico de calback */ {
     // Remove tudo que não é dígito
+    if (typeof value === "string") {
     const cleaned = value.replace(/\D/g, "");
     // Aplica a formatação do CNPJ
     const match = cleaned.match(
@@ -22,6 +30,7 @@ export function formatCNPJ(value: string): string {
         match[4] ? `/${match[4]}` : "",
         match[5] ? `-${match[5]}` : ""
     ].join("");
+    }
 }
 export async function fetchDataApi(
   url: string,

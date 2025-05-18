@@ -1,10 +1,11 @@
-import ValidationContract from "../Validation/fluentValidator.ts";
+import ValidationContract from "../Validation/fluentValidator";
+import { normalizerCNPJ } from "../Utils/Utils";
 export interface CNPJProps {
   cnpjRoot: number;            // Ex: 12345678
   cnpjHeadquarters: number;    // Ex: 0001
   cnpjVerifier: number;       // Ex: 95
 }
-export default class CNPJ {
+export class CNPJ {
   private cnpj: CNPJProps;
   private validator: ValidationContract;
   constructor(props: CNPJProps) {
@@ -15,9 +16,10 @@ export default class CNPJ {
   /**
    * Valida o CNPJ.
    */
-  private validate(): void {
-    this.validator.isRequired(this.cnpj, "CNPJ é obrigatório.")
+  private validate(): CNPJProps {
+    this.validator.isRequired(normalizerCNPJ(this.cnpj), "CNPJ é obrigatório.")
     this.validator.isCNPJ(this.cnpj, "CNPJ inválido.")
+    return this.cnpj;
   }
   /**
    * Retorna o valor do CNPJ.

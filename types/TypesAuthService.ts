@@ -1,3 +1,4 @@
+import { CNPJProps } from "../components/Classes/CNPJ";
 //Tipo para mensagens/callback
 export type MessageResponse = {
   message: string;
@@ -19,7 +20,7 @@ export type AdvertiserProfile = {
   id: string;
   name_enterprise: string;
   email: string;
-  cnpj: string;
+  cnpj: CNPJProps;
   createdAt: string;
 };
 // Tipo unificado para resposta de autenticação
@@ -33,7 +34,7 @@ export type AuthResponse<T extends UserType> = {
 export type LoginCredentials = {
   email: string;
   password: string;
-  cnpj?: string; // Opcional, apenas para anunciantes
+  cnpj?: CNPJProps; // Opcional, apenas para anunciantes
 };
 // Tipos para dados de registro
 export type DriverRegisterData = {
@@ -45,7 +46,7 @@ export type AdvertiserRegisterData = {
   name_enterprise: string;
   email: string;
   password: string;
-  cnpj: string;
+  cnpj: CNPJProps;
 };
 export type RegisterData<T extends UserType> = T extends "driver"
   ? DriverRegisterData
