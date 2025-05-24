@@ -4,9 +4,7 @@ import {
   Text,
   Image,
   StatusBar,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
+  TouchableOpacity
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../../../../assets/arts/background-adroad.png";
@@ -21,7 +19,6 @@ const AdvertiserProfile = () => {
       <StatusBar translucent={true} backgroundColor="transparent" />
       <Image source={backgroundImage} style={styles.fundo} resizeMode="cover" />
       <View style={styles.filtro} />
-      
       {/* Header Padrão */}
       <View style={styles.header}>
         <View style={styles.headerRow}>

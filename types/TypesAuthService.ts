@@ -30,6 +30,11 @@ export type AuthResponse<T extends UserType> = {
   dataUser: T extends "driver" ? DriverProfile : AdvertiserProfile;
   userType: T;
 };
+export type AuthRequest<T extends UserType> = {
+  token: TokenKey;
+  dataUser: T extends "driver" ? DriverProfile : AdvertiserProfile;
+  userType: T;
+};
 // Tipo para credenciais de login
 export type LoginCredentials = {
   email: string;

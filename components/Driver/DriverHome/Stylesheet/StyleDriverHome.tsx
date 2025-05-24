@@ -1,7 +1,6 @@
 import { StyleSheet, Dimensions } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 const statusBarHeight = getStatusBarHeight();
-const { width, height } = Dimensions.get("screen");
 const colors = {
   primary: "#0946d2", //Azul Logo
   secondary: "#0E7E58", //Verde Logo

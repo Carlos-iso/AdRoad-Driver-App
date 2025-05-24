@@ -4,15 +4,9 @@ import {
   Text,
   Image,
   StatusBar,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator
+  TouchableOpacity
 } from "react-native";
-import {
-  useRoute,
-  useFocusEffect,
-  useNavigation,
-} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../../routes/types";
 import TokenManager from "../../../Utils/tokenManager";
@@ -30,21 +24,32 @@ type AdvertiserHomeNavigationProp = StackNavigationProp<
 >;
 export default function AdvertiserHome() {
   // Nome da tela vindo da navegação ou definido manualmente
-  const [screenName, setScreenName] = useState<string>("Home do Anunciante");
-  const route = useRoute();
+  const [screenName, setScreenName] = useState<string>("Home do Anunciante Faça Login!");
   const [userData, setUserData] = useState<
     DriverProfile | AdvertiserProfile
-  >(null);
+  >;
   const navigation = useNavigation<AdvertiserHomeNavigationProp>();
   useEffect(() => {
     const loadUserData = async () => {
       try {
         var authData = await TokenManager.getAuthData();
-        if (!authData) {
+        if (authData === null || authData) {
           navigation.replace("Auth", { userType: "advertiser" });
           return;
         }
-        setUserData(authData.dataUser);
+        // Verifica o tipo do usuário e extrai os dados corretamente
+        if (authData.userType === "driver") {
+          const driverData = authData.dataUser as DriverProfile;
+          setUserData(driverData.name);
+          setScreenName(`Bem-vindo, ${driverData.name}!`);
+        } else if (authData.userType === "advertiser") {
+          const advertiserData = authData.dataUser as AdvertiserProfile;
+          setUserData(advertiserData.name_enterprise);
+          setScreenName(`Home do Anunciante ${advertiserData.name_enterprise}, Bem-vindo!`);
+          // Se precisar do CNPJ:
+          console.log("CNPJ:", advertiserData.cnpj);
+          console.log("Nome Empresa:", advertiserData.name_enterprise);
+        }
       } catch (error) {
         console.error("Failed to load user data:", error);
         navigation.replace("Auth", { userType: "advertiser" });
@@ -52,13 +57,6 @@ export default function AdvertiserHome() {
     };
     loadUserData();
   }, [navigation]);
-  // if (isLoading) {
-  //     return (
-  //       <View style={[styles.containerHome, { justifyContent: 'center' }]}>
-  //         <ActivityIndicator size="large" color="#0000ff" />
-  //       </View>
-  //     );
-  //   }
   if (!userData) {
     return null; // Ou componente de fallback
   }

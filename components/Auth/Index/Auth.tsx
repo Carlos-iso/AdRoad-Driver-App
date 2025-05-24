@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   Alert
 } from "react-native";
-import Loading from "../../Loading/Index/Loading";
+import { Ionicons } from "@expo/vector-icons";
+import { AuthReq } from "../../../types/TypesAuthService"
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../routes/types";
@@ -16,7 +17,7 @@ import { AuthService } from "../Classes/AuthService";
 import { CNPJ } from "../../Classes/CNPJ";
 import TokenManager from "../../Utils/tokenManager";
 import { normalizerCNPJ, formatCNPJ } from "../../Utils/Utils";
-import { Ionicons } from "@expo/vector-icons";
+import Loading from "../../Loading/Index/Loading";
 import styles from "../Stylesheet/StyleAuth";
 type AuthNavigationProp = StackNavigationProp<RootStackParamList, "Auth">;
 export default function AuthScreen() {
@@ -28,7 +29,8 @@ export default function AuthScreen() {
     name: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    cnpj: ""
   });
   const [cnpjFormData, setCnpjFormData] = useState({
     cnpjRoot: 0,
@@ -54,8 +56,8 @@ export default function AuthScreen() {
         break;
       case "cnpj":
         const cnpjValidator = new CNPJ(cnpjFormData);
-console.log(cnpjValidator);
-        
+        console.log(cnpjValidator);
+
         if (userType === "advertiser") {
           contract.isCNPJ(cnpjFormData, "CNPJ inválido");
         }
@@ -169,7 +171,7 @@ console.log(cnpjValidator);
           );
           console.log(`HERE${JSON.stringify(response)}`);
           // Prepara os dados do token
-          const tokenData = {
+          const tokenData: AuthRequest = {
             token: response.data.token,
             dataUser: response.data.dataUser,
             userType: userType
