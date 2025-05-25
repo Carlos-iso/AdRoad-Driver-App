@@ -1,4 +1,4 @@
-import TokenManager, { TokenDataLocal } from "../../Utils/tokenManager.ts";
+import TokenManager, { TokenDataLocal } from "../../Utils/tokenManager";
 import {
   UserType,
   DriverProfile,

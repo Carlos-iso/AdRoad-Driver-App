@@ -1,4 +1,8 @@
 import { CNPJProps } from "../Classes/CNPJ";
+// Tipos de cnpj:
+// 1 - CNPJ completo formatado 00.000.000/0000-00 18 caracteres 14 numeros
+// 2 - CNPJ completo não formatado 00000000000000 14 numeros
+// 3 - CNPJ raiz {00000000 8 numeros} + {0000 4 numeros} + {00 2 numeros}
 interface Data {
   id: number;
   token: string;
@@ -14,7 +18,7 @@ export function normalizerCNPJ(value: CNPJProps): string {
     .toString()
     .padStart(4, "0")}${cnpjVerifier.toString().padStart(2, "0")}`;
 }
-export function formatCNPJ(value: CNPJProps | string) /* Precisa definir um tipo especifico de calback */ {
+export function formatCNPJ(value: string | string) /* Precisa definir um tipo especifico de calback */ {
     // Remove tudo que não é dígito
     if (typeof value === "string") {
     const cleaned = value.replace(/\D/g, "");
@@ -30,6 +34,8 @@ export function formatCNPJ(value: CNPJProps | string) /* Precisa definir um tipo
         match[4] ? `/${match[4]}` : "",
         match[5] ? `-${match[5]}` : ""
     ].join("");
+    } else {
+      return "Não é uma string";
     }
 }
 export async function fetchDataApi(

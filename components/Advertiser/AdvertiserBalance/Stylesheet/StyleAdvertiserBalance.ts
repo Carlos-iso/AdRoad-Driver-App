@@ -1,4 +1,4 @@
-
+import { StyleSheet } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 const statusBarHeight = getStatusBarHeight();
 const colors = {
