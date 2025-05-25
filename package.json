@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "pull": "git pull && npm ci",
-    "push": "git add . && git commit -m 'Error:_Falha_no_login' && git push origin main",
+    "push": "git add . && git commit -m 'Error:_Falha_no_login_Auth_Continue' && git push origin main",
     "type": "tsc --noEmit",
     "type-watch": "tsc --watch --noEmit"
   },
