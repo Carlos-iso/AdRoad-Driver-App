@@ -12,6 +12,15 @@ interface Data {
 export function timeMs(seg: number): number {
   return seg * 1000;
 }
+export function parseCNPJ(cnpjStr: string): CNPJProps | null {
+  const clean = cnpjStr.replace(/\D/g, "");
+  if (clean.length !== 14) return null;
+  return {
+    cnpjRoot: parseInt(clean.substring(0, 8)),
+    cnpjHeadquarters: parseInt(clean.substring(8, 12)),
+    cnpjVerifier: parseInt(clean.substring(12, 14)),
+  };
+}
 export function normalizerCNPJ(value: CNPJProps): string {
   const { cnpjRoot, cnpjHeadquarters, cnpjVerifier } = value;
   return `${cnpjRoot.toString().padStart(8, "0")}${cnpjHeadquarters
@@ -19,24 +28,24 @@ export function normalizerCNPJ(value: CNPJProps): string {
     .padStart(4, "0")}${cnpjVerifier.toString().padStart(2, "0")}`;
 }
 export function formatCNPJ(value: string | string) /* Precisa definir um tipo especifico de calback */ {
-    // Remove tudo que não é dígito
-    if (typeof value === "string") {
+  // Remove tudo que não é dígito
+  if (typeof value === "string") {
     const cleaned = value.replace(/\D/g, "");
     // Aplica a formatação do CNPJ
     const match = cleaned.match(
-        /^(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/
+      /^(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/
     );
     if (!match) return value;
     return [
-        match[1],
-        match[2] ? `.${match[2]}` : "",
-        match[3] ? `.${match[3]}` : "",
-        match[4] ? `/${match[4]}` : "",
-        match[5] ? `-${match[5]}` : ""
+      match[1],
+      match[2] ? `.${match[2]}` : "",
+      match[3] ? `.${match[3]}` : "",
+      match[4] ? `/${match[4]}` : "",
+      match[5] ? `-${match[5]}` : ""
     ].join("");
-    } else {
-      return "Não é uma string";
-    }
+  } else {
+    return "Não é uma string";
+  }
 }
 export async function fetchDataApi(
   url: string,

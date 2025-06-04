@@ -48,7 +48,7 @@ export class AuthService {
     return { data, userType };
   }
   /**
-   * Método de registro universal
+   * Metodo de registro universal
    * @param userData Dados do usuário
    * @param userType Tipo de usuário (driver ou advertiser)
    */

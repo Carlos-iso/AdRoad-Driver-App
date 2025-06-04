@@ -5,7 +5,7 @@ export interface CNPJProps {
   cnpjHeadquarters: number;    // Ex: 0001
   cnpjVerifier: number;       // Ex: 95
 }
-export class CNPJ {
+export class Cnpj {
   private cnpj: CNPJProps;
   private validator: ValidationContract;
   constructor(props: CNPJProps) {

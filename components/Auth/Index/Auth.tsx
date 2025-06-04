@@ -8,7 +8,10 @@ import { RootStackParamList } from "../../../routes/types";
 import ValidationContract from "../../Validation/fluentValidator";
 import { useAuth } from "../../contexts/AuthContext";
 import { AuthService } from "../Classes/AuthService";
-import { CNPJ } from "../../Classes/CNPJ";
+import { Cnpj } from "../../Classes/CNPJ";
+import { Email } from "../../Classes/Email";
+import { Name } from "../../Classes/Name";
+import { Password } from "../../Classes/Password";
 import TokenManager from "../../Utils/tokenManager";
 import { formatCNPJ, normalizerCNPJ } from "../../Utils/Utils";
 import Loading from "../../Loading/Index/Loading";
@@ -26,7 +29,7 @@ export default function AuthScreen() {
     confirmPassword: "",
     cnpj: "",
   });
-  const [cnpjFormData, setCnpjFormData]: AdvertiserProfile = useState({
+  const [cnpjFormData, setCnpjFormData] = useState<AdvertiserProfile>({
     cnpjRoot: 0,
     cnpjHeadquarters: 0,
     cnpjVerifier: 0,
@@ -34,44 +37,38 @@ export default function AuthScreen() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   // Live validate
   const validateField = (field: string, value: string) => {
-    const contract = new ValidationContract();
+    let error = "";
     switch (field) {
       case "email":
-        contract.isEmail(value, "E-mail inválido");
-        contract.hasMaxLen(value, 30, "E-mail muito longo");
+        const email = new Email({ email: value });
+        if (!email.isValid()) error = email.errors[0]?.message ?? "";
         break;
       case "password":
-        contract.hasMinLen(value, 8, "Senha muito curta");
-        contract.hasMaxLen(value, 20, "Senha muito longa");
+        const password = new Password({ password: value });
+        if (!password.isValid()) error = password.errors[0]?.message ?? "";
         break;
       case "name":
-        contract.hasMinLen(value, 3, "Nome muito curto");
-        contract.hasMaxLen(value, 20, "Nome muito longo");
+        const name = new Name({ name: value });
+        if (!name.isValid()) error = name.errors[0]?.message ?? "";
         break;
       case "cnpj":
-        const cnpjValidator = new CNPJ(cnpjFormData);
-        console.log(cnpjValidator);
-
-        if (userType === "advertiser") {
-          contract.isCNPJ(cnpjFormData, "CNPJ inválido");
+        const parsed = parseCNPJ(value);
+        if (parsed) {
+          const cnpj = new Cnpj(parsed);
+          if (!cnpj.isValid()) error = cnpj.errors[0]?.message ?? "";
+          setCnpjFormData(parsed); // Atualiza o estado corretamente
+        } else {
+          error = "CNPJ inválido";
         }
         break;
       case "confirmPassword":
-        if (value !== formData.password) {
-          contract.confirmKey(
-            value,
-            formData.password,
-            "As senhas não coincidem"
-          );
-        }
+        if (value !== formData.password) error = "As senhas não coincidem";
         break;
     }
-    const fieldErrors = contract.getErrors();
     setErrors((prev) => ({
       ...prev,
-      [field]: fieldErrors.length > 0 ? fieldErrors[0].message : "",
+      [field]: error,
     }));
-    contract.clear();
   };
   const isValidUser = async (): Promise<boolean> => {
     const contract = new ValidationContract();
@@ -144,7 +141,7 @@ export default function AuthScreen() {
             }
             : {
               name_enterprise: formData.name,
-              cnpj: cnpjFormData,
+              cnpj: formData.cnpj,
               email: formData.email,
               password: formData.password,
             };
