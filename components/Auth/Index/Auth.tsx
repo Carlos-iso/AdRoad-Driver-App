@@ -249,7 +249,7 @@ export default function AuthScreen() {
         disabled={isLoading}
       >
         {isLoading ? (
-          <Loading />
+          <Loading size={13*2} color="#FFFFFF" bgColor="#FFFFFF" strokeWidth={3}/>
         ) : (
           <Text style={styles.buttonText}>
             {isLogin ? "Entrar" : "Cadastrar"}
