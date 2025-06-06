@@ -1,71 +1,103 @@
-// services/AuthService.ts
-export default class AuthService {
-  private static readonly API_BASE_URL = 'https://adroad-api.onrender.com';
-  private static readonly TOKEN_KEY = '@auth_token';
-  private static async handleResponse(response: Response): Promise<any> {
-    const data = await response.json();
+import TokenManager, { TokenDataLocal } from "../../Utils/tokenManager";
+import {
+  UserType,
+  DriverProfile,
+  AdvertiserProfile,
+  AuthResponse,
+  LoginCredentials,
+  RegisterData
+} from '../../../types/TypesAuthService';
+export class AuthService {
+  private static readonly API_BASE_URL = "https://adroad-api.onrender.com";
+  /**
+   * Metodo de login universal
+   * @param credentials Credenciais de login
+   * @param userType Tipo de usuário (driver ou advertiser)
+   */
+  static async login<T extends UserType>(
+    credentials: LoginCredentials,
+    userType: UserType
+  ): Promise<{ data: AuthResponse<T>, userType: UserType }> {
+    let endpoint = `${this.API_BASE_URL}/${userType}/login`;
+    const body =
+      userType === "advertiser"
+        ? {
+          email: credentials.email,
+          password: credentials.password,
+          cnpj: credentials.cnpj,
+        }
+        : {
+          email: credentials.email,
+          password: credentials.password,
+        };
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
     if (!response.ok) {
-      throw new Error(data.message || 'Erro na requisição');
-    } 
-    return data;
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Falha no login");
+    }
+    const data = await response.json();
+    // console.log(`AQUI:
+    //          ${JSON.stringify(data)}
+    //          ${userType}`)
+    return { data, userType };
   }
-  public static async registerDriver(data: { name: string; email: string; password: string }): Promise<any> {
-    const response = await fetch(`${this.API_BASE_URL}/driver/new`, {
-      method: 'POST',
+  /**
+   * Metodo de registro universal
+   * @param userData Dados do usuário
+   * @param userType Tipo de usuário (driver ou advertiser)
+   */
+  static async register<T extends UserType>(
+    userData: RegisterData<T>,
+    userType: T
+  ): Promise<AuthResponse<T>> {
+    let endpoint = `${this.API_BASE_URL} / ${userType} / new `;
+    // O corpo já está tipado corretamente conforme o userType
+    const response = await fetch(endpoint, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(userData),
     });
-    return this.handleResponse(response);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Falha no registro");
+    }
+    const data = await response.json();
+    return data as AuthResponse<T>;
   }
-  public static async loginDriver(data: { email: string; password: string }): Promise<any> {
-    const response = await fetch(`${this.API_BASE_URL}/driver/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    return this.handleResponse(response);
+  /**
+   * Método para lidar com a resposta de autenticação
+   * @param response Resposta da API
+   * @param userType Tipo de usuário
+   */
+  static async handleAuthResponse<T extends UserType>(
+    response: AuthResponse<T>
+  ): Promise<void> {
+    const dataToStore: TokenDataLocal = {
+      token: response.token,
+      dataUser: response.dataUser,
+      userType: response.userType // Usa o userType da resposta se disponível
+    };
+    await TokenManager.saveAuthData(dataToStore);
   }
-  public static async registerAdvertiser(data: { 
-    name_enterprise: string; 
-    email: string; 
-    cnpj: string; 
-    password: string 
-  }): Promise<any> {
-    const response = await fetch(`${this.API_BASE_URL}/advertiser/new`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    return this.handleResponse(response);
+  // Outros métodos úteis...
+  static async logout(): Promise<void> {
+    await TokenManager.clearAuthData();
   }
-  public static async loginAdvertiser(data: { email: string; password: string; cnpj: string }): Promise<any> {
-    const response = await fetch(`${this.API_BASE_URL}/advertiser/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    return this.handleResponse(response);
+  static async getCurrentUser(): Promise<{
+    user: DriverProfile | AdvertiserProfile;
+    userType: UserType;
+  } | null> {
+    const tokenKey = await TokenManager.getAuthData();
+    return tokenKey
+      ? { user: tokenKey.dataUser, userType: tokenKey.userType }
+      : null;
   }
-  // // Metodo para definir o token após login (opcional)
-  // public static setAuthToken(token: string): void {
-  //   // Implementação de armazenamento do token
-  //   // Exemplo com AsyncStorage ou contexto global
-  //   globalThis.authToken = token;
-  // }
-
-  // // Metodo para obter headers autenticados (opcional)
-  // public static getAuthHeaders(): Record<string, string> {
-  //   return {
-  //     'Authorization': `Bearer ${globalThis.authToken}`,
-  //     'Content-Type': 'application/json',
-  //   };
-  // }
 }

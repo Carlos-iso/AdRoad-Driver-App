@@ -3,17 +3,13 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../routes/types";
 import { View, Text, Animated, StyleSheet, Easing } from "react-native";
-import SplashScreen from "react-native-splash-screen";
 import { Svg, Path } from "react-native-svg";
-
 type SplashAdRoadNavigationProp = StackNavigationProp<
   RootStackParamList,
   "SplashAdRoad"
 >;
-
 export default function SplashAdRoad() {
   const navigation = useNavigation<SplashAdRoadNavigationProp>();
-  
   // Valores animados
   const barScaleY = useRef(new Animated.Value(0)).current;
   const barScaleX = useRef(new Animated.Value(0.1)).current;
@@ -22,7 +18,6 @@ export default function SplashAdRoad() {
   const textOpacity = useRef(new Animated.Value(0)).current;
   const textScale = useRef(new Animated.Value(0.5)).current;
   const containerOpacity = useRef(new Animated.Value(1)).current;
-
   useEffect(() => {
     // 1. Animação da barra "|" crescendo
     Animated.timing(barScaleY, {
@@ -31,7 +26,6 @@ export default function SplashAdRoad() {
       easing: Easing.out(Easing.back(1.7)),
       useNativeDriver: true,
     }).start();
-
     Animated.timing(barScaleX, {
       toValue: 1,
       duration: 600,
@@ -80,7 +74,6 @@ export default function SplashAdRoad() {
       });
     });
   }, []);
-
   return (
     <Animated.View style={[styles.container, { opacity: containerOpacity }]}>
       <View style={styles.animatedContainer}>
@@ -102,7 +95,6 @@ export default function SplashAdRoad() {
             />
           </Svg>
         </Animated.View>
-
         <Animated.View style={{ 
           transform: [
             { scaleY: barScaleY },
@@ -127,7 +119,6 @@ export default function SplashAdRoad() {
     </Animated.View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

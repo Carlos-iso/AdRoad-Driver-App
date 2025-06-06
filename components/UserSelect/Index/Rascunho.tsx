@@ -22,7 +22,6 @@ export default function UserSelect() {
     // Passa o tipo de usuário como parâmetro para a próxima tela
     navigation.navigate("Auth", { userType });
   };
-
   return (
     <View style={styles.container}>
       <Image source={backgroundImage} style={styles.backgroundImage} resizeMode="cover" />

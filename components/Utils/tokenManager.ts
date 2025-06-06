@@ -1,85 +1,112 @@
 import * as SecureStore from "expo-secure-store";
+import {
+  TokenKey,
+  DriverProfile,
+  AdvertiserProfile,
+  UserType,
+} from "../../types/TypesAuthService";
 const API_BASE_URL = "https://adroad-api.onrender.com";
 type TokenKey = {
   token: string;
-  expiresAt: number;
-};
-export type DriverData = {
+  expiresAt: number
+}
+type DriverData = {
   id: string;
   name: string;
   email: string;
   createdAt: string;
 };
-export type AdvertiserData = {
+type AdvertiserData = {
   id: string;
   name_enterprise: string;
   email: string;
   cnpj: string;
   createdAt: string;
 };
-export type DataUser = DriverData | AdvertiserData;
-export type UserType = "driver" | "advertiser";
+type DataUser = DriverData | AdvertiserData;
+type UserType = "driver" | "advertiser";
 type TokenData = {
   token: TokenKey;
-  dataUser: DataUser;
+  dataUser: DriverProfile | AdvertiserProfile;
   userType: UserType;
 };
 export default class TokenManager {
-  private static readonly TOKEN_KEY = "token";
-  private static readonly DATA_USER = "dataUser";
-  private static readonly USER_TYPE = "userType";
-  // Armazena os tokens localmente
-  public static async saveToken(tokenData: TokenData): Promise<void> {
-    if (!tokenData.token || !tokenData.dataUser || !tokenData.userType) {
+  /**
+   * Salva os dados de autenticação
+   * @param authData Resposta da API de autenticação
+   */
+  public static async saveAuthData(
+    authData: TokenDataLocal,
+  ): Promise<void> {
+    if (!authData.token || !authData.dataUser || !authData.userType) {
       throw new Error("Dados incompletos para salvar o token");
     }
     try {
       await Promise.all([
+        SecureStore.setItemAsync(TokenManager.TOKEN_KEY, JSON.stringify(tokenData.token)),
         SecureStore.setItemAsync(
-          TokenManager.TOKEN_KEY,
-          JSON.stringify(tokenData.token)
+          "user_data",
+          JSON.stringify(authData.dataUser),
         ),
-        SecureStore.setItemAsync(
-          TokenManager.DATA_USER,
-          JSON.stringify(tokenData.dataUser)
-        ),
-        SecureStore.setItemAsync(TokenManager.USER_TYPE, tokenData.userType),
+        SecureStore.setItemAsync("user_type", authData.userType),
       ]);
     } catch (error) {
       console.error("Erro ao salvar token:", error);
       throw new Error("Failed to save token");
     }
   }
-  // Remove todos os tokens armazenados
-  public static async removeLocaldb(): Promise<void> {
+  // Remove os dados de autenticação
+  public static async clearAuthData(): Promise<void> {
     try {
       await Promise.all([
-        SecureStore.deleteItemAsync(TokenManager.TOKEN_KEY),
-        SecureStore.deleteItemAsync(TokenManager.DATA_USER),
-        SecureStore.deleteItemAsync(TokenManager.USER_TYPE),
+        await SecureStore.deleteItemAsync("auth_token"),
+        await SecureStore.deleteItemAsync("user_data"),
+        await SecureStore.deleteItemAsync("user_type"),
       ]);
-      console.log("Tokens removidos com sucesso");
     } catch (error) {
-      console.error("Erro ao remover tokens:", error);
-      throw new Error("Failed to remove tokens");
+      console.error("Erro ao remover token:", error);
+      throw new Error("Failed to remove token");
+    }
+  }
+  // Obtém os dados de autenticação armazenados
+  public static async getAuthData(): Promise<TokenDataLocal | null> {
+    try {
+      const [jsonValueToken, jsonValueUser, jsonValueType] =
+        await Promise.all([
+          SecureStore.getItemAsync("auth_token"),
+          SecureStore.getItemAsync("user_data"),
+          SecureStore.getItemAsync("user_type"),
+        ]);
+      if (!jsonValueToken || !jsonValueUser || !jsonValueType) {
+        return null;
+      }
+      const token = JSON.parse(jsonValueToken) as TokenKey;
+      const dataUser = JSON.parse(jsonValueUser) as
+        | DriverProfile
+        | AdvertiserProfile;
+      const userType = jsonValueType as UserType;
+      // Verifica se o usuário ainda é válido no servidor
+      const isValid = await this.verifyUser(dataUser.id, token.token);
+      return isValid ? { token, dataUser, userType } : null;
+    } catch (error) {
+      console.error("Erro ao obter token:", error);
+      return null;
     }
   }
   // Verifica se o usuário ainda existe no servidor
-  public static async verifyUser(id: string, token: string): Promise<boolean> {
+  private static async verifyUser(
+    id: string,
+    token: string,
+  ): Promise<boolean> {
     try {
-      const response = await fetch(`${API_BASE_URL}/driver/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "x-access-token": token,
         },
       });
-      if (!response.ok) {
-        this.removeLocaldb();
-        return false;
-      }
-      const data = await response.json();
-      return !!data;
+      return response.ok;
     } catch (error) {
       console.error("Erro na verificação do usuário:", error);
       return false;
@@ -108,7 +135,7 @@ export default class TokenManager {
       return {
         token: parsedToken,
         dataUser: parsedDataUser,
-        userType: userType as UserType,
+        userType: userType as UserType
       };
     } catch (error) {
       console.error("Erro ao obter token local:", error);
@@ -117,15 +144,14 @@ export default class TokenManager {
   }
   // Metodo adicional para obter headers de autenticação
   public static async getAuthHeaders(): Promise<Record<string, string>> {
-    const tokenData = await this.getToken();
+    const authData = await this.getAuthData();
     return {
       "Content-Type": "application/json",
-      ...(tokenData ? { "x-access-token": tokenData.token.token } : {}),
+      ...(authData ? { "x-access-token": authData.token.token } : {}),
     };
   }
   // Verifica se o usuário está autenticado
   public static async isAuthenticated(): Promise<boolean> {
-    const tokenData = await this.getToken();
-    return !!tokenData;
+    return !!(await this.getAuthData());
   }
 }

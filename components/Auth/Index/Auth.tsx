@@ -1,178 +1,203 @@
 import { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from "react-native";
-import Loading from "../../Loading/Index/Loading";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { AuthRequest, UserType, AdvertiserProfile } from "../../../types/TypesAuthService";
+import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../routes/types";
-import AuthService from "../Classes/AuthService";
+import ValidationContract from "../../Validation/fluentValidator";
+import { useAuth } from "../../contexts/AuthContext";
+import { AuthService } from "../Classes/AuthService";
+import { Cnpj } from "../../Classes/CNPJ";
+import { Email } from "../../Classes/Email";
+import { Name } from "../../Classes/Name";
+import { Password } from "../../Classes/Password";
 import TokenManager from "../../Utils/tokenManager";
-import { Ionicons } from "@expo/vector-icons";
+import { formatCNPJ, normalizerCNPJ } from "../../Utils/Utils";
+import Loading from "../../Loading/Index/Loading";
+import styles from "../Stylesheet/StyleAuth";
 type AuthNavigationProp = StackNavigationProp<RootStackParamList, "Auth">;
-interface DriverAuthData {
-  name?: string;
-  email: string;
-  password: string;
-}
-interface AdvertiserAuthData {
-  name_enterprise?: string;
-  email: string;
-  password: string;
-  cnpj: string;
-}
-type AuthData = DriverAuthData | AdvertiserAuthData;
 export default function AuthScreen() {
-  const route = useRoute();
   const navigation = useNavigation<AuthNavigationProp>();
-  const { userType } = route.params as { userType: "driver" | "advertiser" };
+  const { userType } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    name_enterprise: "",
     email: "",
     password: "",
     confirmPassword: "",
     cnpj: "",
   });
-  const handleSubmit = async () => {
-    // Validação de campos obrigatórios
-    const requiredFields = {
-      ...(!isLogin && {
-        name: formData.name,
-        ...(userType === "advertiser" && { cnpj: formData.cnpj }),
-      }),
-      ...(isLogin && userType === "advertiser" && { cnpj: formData.cnpj }),
-      email: formData.email,
-      password: formData.password,
-    };
-    // Verifica campos vazios
-    const emptyFields = Object.entries(requiredFields)
-      .filter(([_, value]) => !value?.trim())
-      .map(([key]) => {
-        // Mapeia nomes amigáveis para os campos
-        const fieldNames: Record<string, string> = {
-          name: userType === "driver" ? "Nome" : "Nome da empresa",
-          email: "E-mail",
-          cnpj: "CNPJ",
-          password: "Senha",
-        };
-        return fieldNames[key] || key;
-      });
-    if (emptyFields.length > 0) {
-      alert(
-        `Por favor, preencha os seguintes campos:\n⚠ ${emptyFields.join(
-          "\n⚠ "
-        )}`
-      );
-      return;
-    }
-    // Validação específica para CNPJ (apenas para anunciantes)
-    if ((!isLogin || userType === "advertiser") && formData.cnpj) {
-      const cleanedCnpj = formData.cnpj.replace(/\D/g, "");
-      if (cleanedCnpj.length !== 14) {
-        alert("CNPJ deve ter 14 dígitos!");
-        return;
-      }
-    }
-    // Validação de e-mail
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert("Por favor, insira um e-mail válido!");
-      return;
-    }
-    // Validação de senha
-    if (formData.password.length < 8) {
-      alert("A senha deve ter pelo menos 8 caracteres!");
-      return;
-    }
-    if (!isLogin && formData.password !== formData.confirmPassword) {
-      alert("As senhas não coincidem!");
-      return;
-    }
-    if (userType === "advertiser" && !formData.cnpj.trim()) {
-      alert("CNPJ é obrigatório para anunciantes");
-      return;
-    }
-    const getAuthData = (): AuthData => {
-      const baseData = {
-        email: formData.email.trim(),
-        password: formData.password,
-      };
-      if (userType === "driver") {
-        return isLogin ? baseData : { ...baseData, name: formData.name.trim() };
-      } else {
-        // Para advertiser, garantimos que cnpj existe
-        if (!formData.cnpj) {
-          throw new Error("CNPJ é obrigatório para anunciantes");
+  const [cnpjFormData, setCnpjFormData] = useState<AdvertiserProfile>({
+    cnpjRoot: 0,
+    cnpjHeadquarters: 0,
+    cnpjVerifier: 0,
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  // Live validate
+  const validateField = (field: string, value: string) => {
+    let error = "";
+    switch (field) {
+      case "email":
+        const email = new Email({ email: value });
+        if (!email.isValid()) error = email.errors[0]?.message ?? "";
+        break;
+      case "password":
+        const password = new Password({ password: value });
+        if (!password.isValid()) error = password.errors[0]?.message ?? "";
+        break;
+      case "name":
+        const name = new Name({ name: value });
+        if (!name.isValid()) error = name.errors[0]?.message ?? "";
+        break;
+      case "cnpj":
+        const parsed = parseCNPJ(value);
+        if (parsed) {
+          const cnpj = new Cnpj(parsed);
+          if (!cnpj.isValid()) error = cnpj.errors[0]?.message ?? "";
+          setCnpjFormData(parsed); // Atualiza o estado corretamente
+        } else {
+          error = "CNPJ inválido";
         }
-        const advertiserData = {
-          ...baseData,
-          cnpj: formData.cnpj.replace(/\D/g, ""),
-        };
-        return isLogin
-          ? advertiserData
-          : {
-              ...advertiserData,
-              name_enterprise: formData.name.trim(),
-            };
-      }
-    };
-    const dataToSubmit = getAuthData();
-    console.log("Dados enviados:", dataToSubmit);
-    // Exibir Loading
-    setIsLoading(true);
-    //Pegar mensagem de erro, ir para outro lugar
-    const getErrorMessage = (error: unknown): string => {
-      if (error instanceof Error) return error.message;
-      if (typeof error === "string") return error;
-      return "Ocorreu um erro desconhecido";
-    };
-    // Chamada API
-    try {
-      let response;
-      const authData = getAuthData();
-      if (isLogin) {
-        response =
-          userType === "driver"
-            ? await AuthService.loginDriver(authData as DriverAuthData)
-            : await AuthService.loginAdvertiser(authData as AdvertiserAuthData);
-      } else {
-        response =
-          userType === "driver"
-            ? await AuthService.registerDriver(
-                authData as DriverAuthData & { name: string }
-              )
-            : await AuthService.registerAdvertiser(
-                authData as AdvertiserAuthData & { name_enterprise: string }
-              );
-      }
-      if (response.token) {
-        await TokenManager.saveToken({
-          token: response.token,
-          dataUser: response.dataUser, // Certifique-se que a API retorna os dados do usuário
-          userType: userType, // 'driver' ou 'advertiser'
-        });
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Home" }],
-        });
-        setTimeout(() => {
-          alert(`Bem Vindo ${response.dataUser.name | response.dataUser.name_enterprise}`)
-        }, 3000)
-      }
-    } catch (error) {
-      console.error("Erro na autenticação:", error);
-      Alert.alert("Erro", getErrorMessage(error));
-    } finally {
-      setIsLoading(false);
+        break;
+      case "confirmPassword":
+        if (value !== formData.password) error = "As senhas não coincidem";
+        break;
     }
+    setErrors((prev) => ({
+      ...prev,
+      [field]: error,
+    }));
+  };
+  const isValidUser = async (): Promise<boolean> => {
+    const contract = new ValidationContract();
+    // Validações comuns para login e cadastro
+    contract.isEmail(formData.email, "E-mail inválido");
+    contract.hasMaxLen(
+      formData.email,
+      30,
+      "E-mail muito longo (máx. 30 caracteres)"
+    );
+    contract.hasMinLen(
+      formData.password,
+      8,
+      "Senha muito curta (mín. 8 caracteres)"
+    );
+    contract.hasMaxLen(
+      formData.password,
+      20,
+      "Senha muito longa (máx. 20 caracteres)"
+    );
+    // Validações específicas para cadastro
+    if (!isLogin) {
+      contract.confirmKey(
+        formData.password,
+        formData.confirmPassword,
+        "As senhas não coincidem"
+      );
+      // Validação do nome
+      if (userType === "driver") {
+        contract.hasMinLen(
+          formData.name,
+          3,
+          "Nome muito curto (mín. 3 caracteres)"
+        );
+        contract.hasMaxLen(
+          formData.name,
+          20,
+          "Nome muito longo (máx. 20 caracteres)"
+        );
+      } else {
+        contract.hasMinLen(formData.name, 3, "Nome da empresa muito curto");
+        contract.hasMaxLen(formData.name, 20, "Nome da empresa muito longo");
+      }
+      // Validação de CNPJ para anunciante
+      if (userType === "advertiser") {
+        contract.isCNPJ(cnpjFormData, "CNPJ inválido");
+      }
+    }
+    // Verifica se há erros
+    const errors = contract.getErrors();
+    if (errors.length > 0) {
+      Alert.alert("Atenção", errors.map((e) => e.message).join("\n"));
+      contract.clear();
+      return false;
+    }
+    contract.clear();
+    return true;
+  };
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    if (await isValidUser()) {
+      try {
+        // Prepara os dados conforme o tipo de usuário
+        const requestData =
+          userType === "driver"
+            ? {
+              name: formData.name,
+              email: formData.email,
+              password: formData.password,
+            }
+            : {
+              name_enterprise: formData.name,
+              cnpj: formData.cnpj,
+              email: formData.email,
+              password: formData.password,
+            };
+        if (isLogin) {
+          // Login
+          const response = await AuthService.login(requestData, userType);
+          console.log(`HERE${JSON.stringify(response)}`);
+          // Prepara os dados do token
+          const tokenData: AuthRequest<UserType> = {
+            token: response.data.token,
+            dataUser: response.data.dataUser,
+            userType: userType,
+          };
+          // Salva o token
+          // console.log(tokenData);
+          await TokenManager.saveAuthData(tokenData);
+          // Navega para a tela principal
+          console.log("Tipo de usuário:", userType);
+          console.log("Objeto navigation:", navigation);
+          const canNavigate = navigation.canGoBack();
+          console.log("Pode navegar:", canNavigate);
+          switch (userType) {
+            case "driver":
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "DriverHome" }],
+              });
+              break;
+            case "advertiser":
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "AdvertiserHome" }],
+              });
+              break;
+            default:
+              console.log("Erro inesperado");
+          }
+        }
+        // navigateToHome(navigation, tokenData.userType);
+        else {
+          // Cadastro
+          const response = await AuthService.register(requestData, userType);
+          Alert.alert(
+            "Sucesso",
+            response.message || "Cadastro realizado com sucesso"
+          );
+          setIsLogin(true); // Volta para a tela de login
+        }
+      } catch (error: any) {
+        Alert.alert(
+          "Erro",
+          error.message || "Ocorreu um erro durante a operação"
+        );
+      }
+    }
+    setIsLoading(false);
   };
   return (
     <View style={styles.container}>
@@ -199,9 +224,9 @@ export default function AuthScreen() {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>CNPJ</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.cnpj && styles.inputError]}
+            onChangeText={(text) => setFormData({ ...formData, cnpj: formatCNPJ(text) })}
             value={formData.cnpj}
-            onChangeText={(text) => setFormData({ ...formData, cnpj: text })}
             placeholder="00.000.000/0000-00"
             keyboardType="numeric"
             maxLength={18}
@@ -211,13 +236,18 @@ export default function AuthScreen() {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>E-mail</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, errors.email && styles.inputError]}
           value={formData.email}
-          onChangeText={(text) => setFormData({ ...formData, email: text })}
+          onChangeText={(text) => {
+            setFormData({ ...formData, email: text });
+            validateField("email", text);
+          }}
+          onBlur={() => validateField("email", formData.email)}
           placeholder="seu@email.com"
           keyboardType="email-address"
           autoCapitalize="none"
         />
+        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Senha</Text>
@@ -276,68 +306,3 @@ export default function AuthScreen() {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontFamily: "Jura_700Bold",
-    textAlign: "center",
-    marginBottom: 30,
-    color: "#000",
-  },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  label: {
-    fontSize: 16,
-    fontFamily: "Jura_600SemiBold",
-    marginBottom: 5,
-    color: "#000",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    fontFamily: "Jura_400Regular",
-  },
-  button: {
-    backgroundColor: "#333",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontFamily: "Jura_700Bold",
-  },
-  toggleAuth: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  toggleAuthText: {
-    color: "#333",
-    fontSize: 14,
-    fontFamily: "Jura_500Medium",
-    textDecorationLine: "underline",
-  },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 30,
-  },
-  backButtonText: {
-    color: "#333",
-    fontSize: 16,
-    fontFamily: "Jura_600SemiBold",
-    marginLeft: 5,
-  },
-});

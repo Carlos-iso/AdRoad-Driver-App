@@ -1,12 +1,26 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": "./node_modules/expo/tsconfig.base",
   "compilerOptions": {
     "jsx": "react-native",
     "strict": true,
-    "moduleResolution": "node"
+    "allowImportingTsExtensions": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "module": "es6",
+    "target": "es5"
   },
   "include": [
-    "**/*", // Inclui todos os arquivos na pasta raiz
-    "declarations.d.ts", // Inclui o arquivo de declaração de tipos
+    "**/*",
+    "declarations.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "Old",
+    "**/*.spec.ts"
   ]
 }

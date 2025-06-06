@@ -110,3 +110,616 @@ features/
     │   ├── AuthService.ts # Lógica de autenticação
     │   └── tokenManager.ts
     └── types/             # Tipos específicos
+
+    {
+            Home ✔
+
+            title: "Perfil", ✔
+            icon: "user",
+            action: () => navigation.navigate("Profile")
+        },
+        {
+            title: "Saldo", ✔
+            value: `R$ ${balance.toFixed(2)}`,
+            icon: "dollar-sign",
+            action: () => navigation.navigate("Balance")
+            //É uma sub tela saldo
+            // {
+            //     title: "Investimento Total",
+            //     value: `R$ ${totalInvested.toFixed(2)}`,
+            //     icon: "trending-up",
+            //     action: () => navigation.navigate("Investments")
+            // },
+        },
+        {
+            title: "Anúncios", ✔
+            value: `${activeAds}/${totalAds} ativos`,
+            icon: "image",
+            action: () => navigation.navigate("AdsManagement")
+            //É uma sub tela anúncios
+            // {
+            //     title: "Criar Anúncio",
+            //     icon: "plus-circle",
+            //     action: () => navigation.navigate("CreateAd")
+            // },
+        },
+        
+        //AuthService.ts
+        // export default class AuthService {
+//     private static readonly API_BASE_URL = "https://adroad-api.onrender.com";
+//     private static readonly TOKEN_KEY = "@auth_token";
+//     private static async handleResponse(response: Response): Promise<any> {
+//         const data = await response.json();
+//         if (!response.ok) {
+//             throw new Error(data.message || "Erro na requisição");
+//         }
+//         return data;
+//     }
+//     public static async registerDriver(data: {
+//         name: string;
+//         email: string;
+//         password: string;
+//     }): Promise<any> {
+//         const response = await fetch(`${this.API_BASE_URL}/driver/new`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify(data)
+//         });
+//         return this.handleResponse(response);
+//     }
+//     public static async loginDriver(data: {
+//         email: string;
+//         password: string;
+//     }): Promise<any> {
+//         const response = await fetch(`${this.API_BASE_URL}/driver/login`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify(data)
+//         });
+//         return this.handleResponse(response);
+//     }
+//     public static async registerAdvertiser(data: {
+//         name_enterprise: string;
+//         email: string;
+//         cnpj: string;
+//         password: string;
+//     }): Promise<any> {
+//         const response = await fetch(`${this.API_BASE_URL}/advertiser/new`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify(data)
+//         });
+//         return this.handleResponse(response);
+//     }
+//     public static async loginAdvertiser(data: {
+//         cnpj: string;
+//         email: string;
+//         password: string;
+//     }): Promise<any> {
+//         const response = await fetch(`${this.API_BASE_URL}/advertiser/login`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify(data)
+//         });
+//         return this.handleResponse(response);
+//     }
+    // // Metodo para definir o token após login (opcional)
+    // public static setAuthToken(token: string): void {
+    //   // Implementação de armazenamento do token
+    //   // Exemplo com AsyncStorage ou contexto global
+    //   globalThis.authToken = token;
+    // }
+
+    // // Metodo para obter headers autenticados (opcional)
+    // public static getAuthHeaders(): Record<string, string> {
+    //   return {
+    //     'Authorization': `Bearer ${globalThis.authToken}`,
+    //     'Content-Type': 'application/json',
+    //   };
+    // }
+    
+    //tokenManager.ts
+    import * as SecureStore from "expo-secure-store";
+const API_BASE_URL = "https://adroad-api.onrender.com";
+type TokenKey = {
+    token: string;
+    expiresAt: number;
+};
+export type DriverData = {
+    id: string;
+    name: string;
+    email: string;
+    createdAt: string;
+};
+export type AdvertiserData = {
+    id: string;
+    name_enterprise: string;
+    email: string;
+    cnpj: string;
+    createdAt: string;
+};
+export type DataUser = DriverData | AdvertiserData;
+export type UserType = "driver" | "advertiser";
+export type TokenData = {
+    token: TokenKey;
+    dataUser: DataUser;
+    userType: UserType;
+};
+export default class TokenManager {
+    private static readonly TOKEN_KEY = "token";
+    private static readonly DATA_USER = "dataUser";
+    private static readonly USER_TYPE = "userType";
+    // Preara o token
+    /**
+     * Prepara os dados do token para serem salvos
+     * @param apiResponseToken Dados do token da API
+     * @param apiResponseUser Dados do usuário da API
+     * @param userType Tipo do usuário (driver ou advertiser)
+     */
+    public static prepareTokenData(
+        apiResponseToken: object,
+        apiResponseUser: object,
+        userType: string
+    ): TokenData {
+        if (!apiResponseToken || !apiResponseUser || !userType) {
+            throw new Error("Dados incompletos para preparar o token");
+        }
+        return {
+            token: apiResponseToken,
+            dataUser: apiResponseUser,
+            userType: userType
+        };
+    }
+    public static async saveToken(tokenData: TokenData): Promise<void> {
+        if (!!tokenData.token || !!tokenData.dataUser || !!tokenData.userType) {
+            throw new Error("Dados incompletos para salvar o token");
+        }
+        try {
+            await Promise.all([
+                SecureStore.setItemAsync(
+                    TokenManager.TOKEN_KEY,
+                    JSON.stringify(tokenData.token)
+                ),
+                SecureStore.setItemAsync(
+                    TokenManager.DATA_USER,
+                    JSON.stringify(tokenData.dataUser)
+                ),
+                SecureStore.setItemAsync(
+                    TokenManager.USER_TYPE,
+                    tokenData.userType
+                )
+            ]);
+        } catch (error) {
+            console.error("Erro ao salvar token:", error);
+            throw new Error("Failed to save token");
+        }
+    }
+    // Remove todos os tokens armazenados
+    public static async removeLocaldb(): Promise<void> {
+        try {
+            await Promise.all([
+                SecureStore.deleteItemAsync(TokenManager.TOKEN_KEY),
+                SecureStore.deleteItemAsync(TokenManager.DATA_USER),
+                SecureStore.deleteItemAsync(TokenManager.USER_TYPE)
+            ]);
+            console.log("Tokens removidos com sucesso");
+        } catch (error) {
+            console.error("Erro ao remover tokens:", error);
+            throw new Error("Failed to remove tokens");
+        }
+    }
+    // Verifica se o usuário ainda existe no servidor
+    public static async verifyUser(
+        id: string,
+        token: string
+    ): Promise<boolean> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/driver/${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-access-token": token
+                }
+            });
+            if (!response.ok) {
+                this.removeLocaldb();
+                return false;
+            }
+            const data = await response.json();
+            return !!data;
+        } catch (error) {
+            console.error("Erro na verificação do usuário:", error);
+            return false;
+        }
+    }
+    public static removeToken() {
+        throw new Error("Method not implemented.");
+    }
+    // Obtém os tokens armazenados
+    public static async getToken(): Promise<TokenData | null> {
+        try {
+            const [token, dataUser, userType] = await Promise.all([
+                SecureStore.getItemAsync(TokenManager.TOKEN_KEY),
+                SecureStore.getItemAsync(TokenManager.DATA_USER),
+                SecureStore.getItemAsync(TokenManager.USER_TYPE)
+            ]);
+            if (!token || !dataUser || !userType) {
+                return null;
+            }
+            const parsedToken: TokenKey = JSON.parse(token);
+            const parsedDataUser: DataUser = JSON.parse(dataUser);
+            const isValidUser = await this.verifyUser(parsedDataUser.id, token);
+            if (!isValidUser) {
+                return null;
+            }
+            return {
+                token: parsedToken,
+                dataUser: parsedDataUser,
+                userType: userType as UserType
+            };
+        } catch (error) {
+            console.error("Erro ao obter token local:", error);
+            return null;
+        }
+    }
+    // Metodo adicional para obter headers de autenticação
+    public static async getAuthHeaders(): Promise<Record<string, string>> {
+        const tokenData = await this.getToken();
+        return {
+            "Content-Type": "application/json",
+            ...(tokenData ? { "x-access-token": tokenData.token.token } : {})
+        };
+    }
+    // Verifica se o usuário está autenticado
+    public static async isAuthenticated(): Promise<boolean> {
+        const tokenData = await this.getToken();
+        return !!tokenData;
+    }
+    
+    //Auth.tsx
+    import { useState } from "react";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Alert
+} from "react-native";
+import Loading from "../../Loading/Index/Loading";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../../routes/types";
+import AuthService from "../Classes/AuthService";
+import TokenManager from "../../Utils/tokenManager.ts";
+import { Ionicons } from "@expo/vector-icons";
+type AuthNavigationProp = StackNavigationProp<RootStackParamList, "Auth">;
+export default function AuthScreen() {
+    const route = useRoute();
+    const navigation = useNavigation<AuthNavigationProp>();
+    const { userType } = route.params as { userType: "driver" | "advertiser" };
+    const [isLogin, setIsLogin] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        cnpj: ""
+    });
+    const handleSubmit = async () => {
+        // Validação de campos obrigatórios
+        const requiredFields = {
+            ...(!isLogin && {
+                name: formData.name,
+                ...(userType === "advertiser" && { cnpj: formData.cnpj })
+            }),
+            ...(isLogin &&
+                userType === "advertiser" && { cnpj: formData.cnpj }),
+            email: formData.email,
+            password: formData.password
+        };
+        // Verifica campos vazios
+        const emptyFields = Object.entries(requiredFields)
+            .filter(([_, value]) => !value?.trim())
+            .map(([key]) => {
+                // Mapeia nomes amigáveis para os campos
+                const fieldNames: Record<string, string> = {
+                    name: userType === "driver" ? "Nome" : "Nome da empresa",
+                    email: "E-mail",
+                    cnpj: "CNPJ",
+                    password: "Senha"
+                };
+                return fieldNames[key] || key;
+            });
+        if (emptyFields.length > 0) {
+            alert(
+                `Por favor, preencha os seguintes campos:\n⚠ ${emptyFields.join(
+                    "\n⚠ "
+                )}`
+            );
+            return;
+        }
+        // Validação específica para CNPJ (apenas para anunciantes)
+        if ((!isLogin || userType === "advertiser") && formData.cnpj) {
+            const cleanedCnpj = formData.cnpj.replace(/\D/g, "");
+            if (cleanedCnpj.length !== 14) {
+                alert("CNPJ deve ter 14 dígitos!");
+                return;
+            }
+        }
+        // Validação de e-mail
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            alert("Por favor, insira um e-mail válido!");
+            return;
+        }
+        // Validação de senha
+        if (formData.password.length < 8) {
+            alert("A senha deve ter pelo menos 8 caracteres!");
+            return;
+        }
+        if (!isLogin && formData.password !== formData.confirmPassword) {
+            alert("As senhas não coincidem!");
+            return;
+        }
+        const dataToSubmit = isLogin
+            ? userType === "driver"
+                ? {
+                      email: formData.email,
+                      password: formData.password
+                  } // Login motorista
+                : {
+                      cnpj: formData.cnpj,
+                      email: formData.email,
+                      password: formData.password
+                  } // Login anunciante (com CNPJ)
+            : userType === "driver"
+            ? {
+                  name: formData.name,
+                  email: formData.email,
+                  password: formData.password
+              } // Cadastro motorista
+            : {
+                  name_enterprise: formData.name,
+                  cnpj: formData.cnpj,
+                  email: formData.email,
+                  password: formData.password
+              }; // Cadastro anunciante
+        console.log("Dados enviados:", dataToSubmit);
+        // Exibir Loading
+        setIsLoading(true);
+        // Chamada API
+        try {
+            let response;
+            if (isLogin) {
+                response = await AuthService.login(
+                    JSON.parse(dataToSubmit),
+                    userType
+                );
+            } else {
+                const registrationData =
+                    userType === "driver"
+                        ? { ...baseData, name: formData.name.trim() }
+                        : {
+                              ...baseData,
+                              name_enterprise: formData.name.trim()
+                          };
+                response = await AuthService.register(
+                    registrationData,
+                    userType
+                );
+            }
+            console.log("Hello");
+            console.log(`Aqui ${Object.values(response.token)}`);
+            // Armazena o token recebido
+            if (response.token) {
+                console.log(response.token.token);
+                await TokenManager.saveToken(JSON.parse(response));
+                // Navega para a tela principal após login/cadastro bem-sucedido
+                if (userType === "driver") {
+                    navigation.navigate("DriverHome");
+                } else if (userType === "advertiser") {
+                    navigation.navigate("AdvertiserHome");
+                }
+            }
+            console.log("Resposta da API:", response);
+        } catch (error) {
+            console.error("Erro na autenticação:", error);
+            Alert.alert(
+                "Erro",
+                error.message || "Ocorreu um erro durante a autenticação"
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>
+                {isLogin ? "Login" : "Cadastro"} como{" "}
+                {userType === "driver" ? "Motorista" : "Anunciante"}
+            </Text>
+            {!isLogin && (
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>
+                        {userType === "driver"
+                            ? "Nome completo"
+                            : "Nome da empresa"}
+                    </Text>
+                    <TextInput
+                        style={styles.input}
+                        value={formData.name}
+                        onChangeText={text =>
+                            setFormData({ ...formData, name: text })
+                        }
+                        placeholder={
+                            userType === "driver"
+                                ? "João Silva"
+                                : "Minha Empresa LTDA"
+                        }
+                    />
+                </View>
+            )}
+            {userType === "advertiser" && (
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>CNPJ</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={formData.cnpj}
+                        onChangeText={text =>
+                            setFormData({ ...formData, cnpj: text })
+                        }
+                        placeholder="00.000.000/0000-00"
+                        keyboardType="numeric"
+                        maxLength={18}
+                    />
+                </View>
+            )}
+            <View style={styles.inputContainer}>
+                <Text style={styles.label}>E-mail</Text>
+                <TextInput
+                    style={styles.input}
+                    value={formData.email}
+                    onChangeText={text =>
+                        setFormData({ ...formData, email: text })
+                    }
+                    placeholder="seu@email.com"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                />
+            </View>
+            <View style={styles.inputContainer}>
+                <Text style={styles.label}>Senha</Text>
+                <TextInput
+                    style={styles.input}
+                    value={formData.password}
+                    onChangeText={text =>
+                        setFormData({ ...formData, password: text })
+                    }
+                    placeholder="********"
+                    secureTextEntry
+                />
+            </View>
+            {!isLogin && (
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Confirmar senha</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={formData.confirmPassword}
+                        onChangeText={text =>
+                            setFormData({ ...formData, confirmPassword: text })
+                        }
+                        placeholder="********"
+                        secureTextEntry
+                    />
+                </View>
+            )}
+            <TouchableOpacity
+                style={styles.button}
+                onPress={handleSubmit}
+                disabled={isLoading}
+            >
+                {isLoading ? (
+                    <Loading />
+                ) : (
+                    <Text style={styles.buttonText}>
+                        {isLogin ? "Entrar" : "Cadastrar"}
+                    </Text>
+                )}
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.toggleAuth}
+                onPress={() => setIsLogin(!isLogin)}
+            >
+                <Text style={styles.toggleAuthText}>
+                    {isLogin
+                        ? "Não tem uma conta? Cadastre-se"
+                        : "Já tem uma conta? Faça login"}
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
+            >
+                <Ionicons name="arrow-back" size={24} color="#000" />
+                <Text style={styles.backButtonText}>Voltar</Text>
+            </TouchableOpacity>
+        </View>
+    );
+}
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 20,
+        justifyContent: "center"
+    },
+    title: {
+        fontSize: 24,
+        fontFamily: "Jura_700Bold",
+        textAlign: "center",
+        marginBottom: 30,
+        color: "#000"
+    },
+    inputContainer: {
+        marginBottom: 15
+    },
+    label: {
+        fontSize: 16,
+        fontFamily: "Jura_600SemiBold",
+        marginBottom: 5,
+        color: "#000"
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 8,
+        padding: 12,
+        fontSize: 16,
+        fontFamily: "Jura_400Regular"
+    },
+    button: {
+        backgroundColor: "#333",
+        padding: 15,
+        borderRadius: 8,
+        alignItems: "center",
+        marginTop: 20
+    },
+    buttonText: {
+        color: "#fff",
+        fontSize: 18,
+        fontFamily: "Jura_700Bold"
+    },
+    toggleAuth: {
+        marginTop: 20,
+        alignItems: "center"
+    },
+    toggleAuthText: {
+        color: "#333",
+        fontSize: 14,
+        fontFamily: "Jura_500Medium",
+        textDecorationLine: "underline"
+    },
+    backButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 30
+    },
+    backButtonText: {
+        color: "#333",
+        fontSize: 16,
+        fontFamily: "Jura_600SemiBold",
+        marginLeft: 5
+    }
+});
+
+    //Auth.tsx
