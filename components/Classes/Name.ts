@@ -2,7 +2,7 @@ import ValidationContract from "../Validation/fluentValidator";
 interface NameProps {
 	name: string;
 }
-export default class Name {
+export class Name {
 	private name: string;
 	private validator: ValidationContract;
 	constructor(props: NameProps) {

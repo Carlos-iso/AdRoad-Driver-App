@@ -2,7 +2,7 @@ import ValidationContract from "../Validation/fluentValidator";
 interface EmailProps {
   email: string;
 }
-export default class Email {
+export class Email {
   private email: string;
   private validator: ValidationContract;
   constructor(props: EmailProps) {

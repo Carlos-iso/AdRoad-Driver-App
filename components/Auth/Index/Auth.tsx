@@ -29,11 +29,6 @@ export default function AuthScreen() {
     confirmPassword: "",
     cnpj: "",
   });
-  const [cnpjFormData, setCnpjFormData] = useState<AdvertiserProfile>({
-    cnpjRoot: 0,
-    cnpjHeadquarters: 0,
-    cnpjVerifier: 0,
-  });
   const [errors, setErrors] = useState<Record<string, string>>({});
   // Live validate
   const validateField = (field: string, value: string) => {
@@ -49,7 +44,7 @@ export default function AuthScreen() {
         validatorInstance = new Name({ name: formData.name });
         break;
       case "cnpj":
-        validatorInstance = new Cnpj(cnpjFormData);
+        validatorInstance = new Cnpj({ cnpj: formData.cnpj });
         break;
       case "confirmPassword":
         if (value !== formData.password) {

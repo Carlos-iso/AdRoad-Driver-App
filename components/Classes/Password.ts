@@ -2,7 +2,7 @@ import ValidationContract from "../Validation/fluentValidator";
 interface PasswordProps {
 	password: string;
 }
-export default class Password {
+export class Password {
 	private password: string;
 	private validator: ValidationContract;
 	constructor(props: PasswordProps) {
