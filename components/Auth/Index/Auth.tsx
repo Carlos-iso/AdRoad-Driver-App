@@ -37,95 +37,74 @@ export default function AuthScreen() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   // Live validate
   const validateField = (field: string, value: string) => {
-    let error = "";
+    let validatorInstance: any;
     switch (field) {
       case "email":
-        const email = new Email({ email: value });
-        if (!email.isValid()) error = email.errors[0]?.message ?? "";
+        validatorInstance = new Email({ email: formData.email });
         break;
       case "password":
-        const password = new Password({ password: value });
-        if (!password.isValid()) error = password.errors[0]?.message ?? "";
+        validatorInstance = new Password({ password: formData.password });
         break;
       case "name":
-        const name = new Name({ name: value });
-        if (!name.isValid()) error = name.errors[0]?.message ?? "";
+        validatorInstance = new Name({ name: formData.name });
         break;
       case "cnpj":
-        const parsed = parseCNPJ(value);
-        if (parsed) {
-          const cnpj = new Cnpj(parsed);
-          if (!cnpj.isValid()) error = cnpj.errors[0]?.message ?? "";
-          setCnpjFormData(parsed); // Atualiza o estado corretamente
-        } else {
-          error = "CNPJ inválido";
-        }
+        validatorInstance = new Cnpj(cnpjFormData);
         break;
       case "confirmPassword":
-        if (value !== formData.password) error = "As senhas não coincidem";
-        break;
+        if (value !== formData.password) {
+          setErrors((prev) => ({
+            ...prev,
+            confirmPassword: "As senhas não coincidem",
+          }));
+          return;
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            confirmPassword: "",
+          }));
+          return;
+        }
     }
-    setErrors((prev) => ({
-      ...prev,
-      [field]: error,
-    }));
+    if (validatorInstance && !validatorInstance.isValid()) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: validatorInstance.errors[0].message,
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
   };
-  const isValidUser = async (): Promise<boolean> => {
-    const contract = new ValidationContract();
-    // Validações comuns para login e cadastro
-    contract.isEmail(formData.email, "E-mail inválido");
-    contract.hasMaxLen(
-      formData.email,
-      30,
-      "E-mail muito longo (máx. 30 caracteres)"
-    );
-    contract.hasMinLen(
-      formData.password,
-      8,
-      "Senha muito curta (mín. 8 caracteres)"
-    );
-    contract.hasMaxLen(
-      formData.password,
-      20,
-      "Senha muito longa (máx. 20 caracteres)"
-    );
-    // Validações específicas para cadastro
+  const isValidUser = (): boolean => {
+    let nameValid = true;
+    let cnpjValid = true;
+    const email = new Email({ email: formData.email });
+    const password = new Password({ password: formData.password });
+    if (!email.isValid()) {
+      setErrors(prev => ({ ...prev, email: email.errors[0].message }));
+    }
+    if (!password.isValid()) {
+      setErrors(prev => ({ ...prev, password: password.errors[0].message }));
+    }
     if (!isLogin) {
-      contract.confirmKey(
-        formData.password,
-        formData.confirmPassword,
-        "As senhas não coincidem"
-      );
-      // Validação do nome
-      if (userType === "driver") {
-        contract.hasMinLen(
-          formData.name,
-          3,
-          "Nome muito curto (mín. 3 caracteres)"
-        );
-        contract.hasMaxLen(
-          formData.name,
-          20,
-          "Nome muito longo (máx. 20 caracteres)"
-        );
-      } else {
-        contract.hasMinLen(formData.name, 3, "Nome da empresa muito curto");
-        contract.hasMaxLen(formData.name, 20, "Nome da empresa muito longo");
+      const name = new Name({ name: formData.name });
+      nameValid = name.isValid();
+      if (!nameValid) {
+        setErrors(prev => ({ ...prev, name: name.errors[0].message }));
       }
-      // Validação de CNPJ para anunciante
+      if (formData.password !== formData.confirmPassword) {
+        setErrors(prev => ({ ...prev, confirmPassword: "As senhas não coincidem" }));
+        return false;
+      }
       if (userType === "advertiser") {
-        contract.isCNPJ(cnpjFormData, "CNPJ inválido");
+        const cnpjObj = new Cnpj(cnpjFormData);
+        cnpjValid = cnpjObj.isValid();
+        if (!cnpjValid) {
+          setErrors(prev => ({ ...prev, cnpj: cnpjObj.errors[0].message }));
+        }
       }
     }
-    // Verifica se há erros
-    const errors = contract.getErrors();
-    if (errors.length > 0) {
-      Alert.alert("Atenção", errors.map((e) => e.message).join("\n"));
-      contract.clear();
-      return false;
-    }
-    contract.clear();
-    return true;
+    return email.isValid() && password.isValid() && nameValid && cnpjValid;
   };
   const handleSubmit = async () => {
     setIsLoading(true);
