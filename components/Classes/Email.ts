@@ -1,6 +1,6 @@
 import ValidationContract from "../Validation/fluentValidator";
 interface EmailProps {
-  email: string;
+  email: string; // Ex: exemplo@gmail.com
 }
 export class Email {
   private email: string;

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, StatusBar, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../../../../assets/arts/background-adroad.png";
-import tokenManager, { TokenDataLocal } from "../../../Utils/tokenManager";
+import TokenManager from "../../Utils/tokenManager";
 import {
 	DriverProfile,
 	AdvertiserProfile,
-} from "../../../../types/TypesAuthService";
-import Graphic from "../../../Graphic/Index/Graphic";
-import styles from "../Stylesheet/StyleDriverProfile";
+} from "../../../types/TypesAuthService";
+import Graphic from "../../Graphic/Graphic";
+import styles from "./Stylesheet/StyleDriverProfile";
 const Profile = () => {
 	// const { getTokenLocal } = tokenManager();
 	const [usuario, setUsuario] = useState<{
@@ -19,7 +19,7 @@ const Profile = () => {
 	} | null>(null);
 	const loadProfile = async () => {
 		try {
-			const getProfileData = await tokenManager.getAuthData();
+			const getProfileData = await TokenManager.getAuthData();
 			if (getProfileData?.dataUser) {
 				const userData: DriverProfile | AdvertiserProfile =
 					getProfileData.dataUser;

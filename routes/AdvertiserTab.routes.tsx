@@ -2,7 +2,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import AdvertiserHome from "../components/Advertiser/AdvertiserHome/Index/AdvertiserHome";
-import AdvertiserAds from "../components/Advertiser/AdvertiserAds/Index/AdvertiserAds";
+import AdvertiserAds from "../components/Advertiser/AdvertiserAds/AdvertiserAds";
 import AdvertiserBalance from "../components/Advertiser/AdvertiserBalance/Index/AdvertiserBalance";
 import AdvertiserProfile from "../components/Advertiser/AdvertiserProfile/Index/AdvertiserProfile";
 const Tab = createBottomTabNavigator();

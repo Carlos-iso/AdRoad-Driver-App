@@ -2,7 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import MenuTabsRoutes from "./DriverTabs.routes";
 import AdvertiserHome from "../components/Advertiser/AdvertiserHome/Index/AdvertiserHome";
 // Screens
-import SplashScreen from "../components/SplashScreen/Index/SplashScreen";
+import SplashScreen from "../components/SplashScreen/SplashScreen";
 import UserSelect from "../components/UserSelect/Index/UserSelect";
 import AuthScreen from "../components/Auth/Index/Auth";
 const Stack = createStackNavigator();

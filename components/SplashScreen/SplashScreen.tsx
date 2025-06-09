@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../../routes/types";
+import { RootStackParamList } from "../../routes/types";
 import { View, Text, Animated, StyleSheet, Easing } from "react-native";
 import { Svg, Path } from "react-native-svg";
 type SplashAdRoadNavigationProp = StackNavigationProp<

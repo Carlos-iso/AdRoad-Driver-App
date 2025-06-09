@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "pull": "git pull && npm ci",
-    "push": "git add . && git commit -m 'Auth_Continue_Mobile:Class_CNPJ_Refak_2' && git push origin main",
+    "push": "git add . && git commit -m 'Refactor:_Exclude_Index_Dir_Erros_Continue' && git push origin main",
     "type": "tsc --noEmit",
     "type-watch": "tsc --watch --noEmit"
   },

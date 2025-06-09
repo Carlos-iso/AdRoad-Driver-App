@@ -1,9 +1,7 @@
 import ValidationContract from "../Validation/fluentValidator";
 import { normalizerCNPJ } from "../Utils/Utils";
 export interface CNPJProps {
-  cnpjRoot: number;            // Ex: 12345678
-  cnpjHeadquarters: number;    // Ex: 0001
-  cnpjVerifier: number;       // Ex: 95
+  cnpj: string; // Ex: 12345678000195
 }
 export class Cnpj {
   private cnpj: CNPJProps;

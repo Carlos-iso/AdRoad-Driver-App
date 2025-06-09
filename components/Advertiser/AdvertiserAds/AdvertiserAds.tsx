@@ -3,7 +3,7 @@ import { View, Text, Image, StatusBar, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../../../../assets/arts/background-adroad.png";
 import LogoIcon from "../../../../assets/svgs/logo-black.svg";
-import styles from "../Stylesheet/StyleAdvertiserAds"; // Crie este arquivo de estilos
+import styles from "./Stylesheet/StyleAdvertiserAds"; // Crie este arquivo de estilos
 const AdvertiserAds = () => {
     // Nome da tela vindo da navegação ou definido manualmente
     const [userName] = useState("Nome do Usuário");

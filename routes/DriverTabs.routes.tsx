@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 //Screans
 import DriverHome from "../components/Driver/DriverHome/Index/DriverHome";
-import Profile from "../components/Driver/DriverProfile/Index/DriverProfile";
+import Profile from "../components/Driver/DriverProfile/DriverProfile";
 const Tab = createBottomTabNavigator();
 export default function DriverTabs() {
     return (
