@@ -21,7 +21,7 @@ const API_BASE_URL = "https://adroad-api.onrender.com";
 // 	createdAt: string;
 // };
 // type DataUser = DriverData | AdvertiserData;
-type TokenData = {
+export type TokenData = {
 	token: TokenKey;
 	dataUser: DriverProfile | AdvertiserProfile;
 	userType: UserType;

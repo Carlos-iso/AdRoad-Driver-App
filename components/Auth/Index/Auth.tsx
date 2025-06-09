@@ -92,7 +92,7 @@ export default function AuthScreen() {
         return false;
       }
       if (userType === "advertiser") {
-        const cnpjObj = new Cnpj(cnpjFormData);
+        const cnpjObj = new Cnpj(formData.cnpj);
         cnpjValid = cnpjObj.isValid();
         if (!cnpjValid) {
           setErrors(prev => ({ ...prev, cnpj: cnpjObj.errors[0].message }));
@@ -253,7 +253,7 @@ export default function AuthScreen() {
         disabled={isLoading}
       >
         {isLoading ? (
-          <Loading size={13*2} color="#FFFFFF" bgColor="#FFFFFF" strokeWidth={3}/>
+          <Loading size={13 * 2} color="#FFFFFF" bgColor="#FFFFFF" strokeWidth={3} />
         ) : (
           <Text style={styles.buttonText}>
             {isLogin ? "Entrar" : "Cadastrar"}
