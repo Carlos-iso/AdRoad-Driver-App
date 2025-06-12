@@ -4,10 +4,9 @@ export interface CNPJProps {
   cnpj: string; // Ex: 12345678000195
 }
 export class Cnpj {
-  private cnpj: CNPJProps;
   private validator: ValidationContract;
-  constructor(props: CNPJProps) {
-    this.cnpj = props;
+  constructor(cnpj: CNPJProps) {
+    this.cnpj = normalizerCNPJ(cnpj);
     this.validator = new ValidationContract();
     this.validate();
   }
@@ -18,6 +17,12 @@ export class Cnpj {
     this.validator.isRequired(normalizerCNPJ(this.cnpj), "CNPJ é obrigatório.")
     this.validator.isCNPJ(this.cnpj, "CNPJ inválido.")
     return this.cnpj;
+  }
+  /**
+ * Tira ou coloca pontuaçao
+ */
+  public tuggleDot() {
+    return "Em Breve..."
   }
   /**
    * Retorna o valor do CNPJ.
