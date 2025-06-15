@@ -56,7 +56,7 @@ export class ApiService {
     userData: RegisterData<T>,
     userType: T
   ): Promise<AuthResponse<T>> {
-    let endpoint = `${this.API_BASE_URL} / ${userType} / new `;
+    let endpoint = `${this.API_BASE_URL}/${userType}/new`;
     // O corpo já está tipado corretamente conforme o userType
     const response = await fetch(endpoint, {
       method: "POST",
@@ -80,7 +80,7 @@ export class ApiService {
   static async handleAuthResponse<T extends UserType>(
     response: AuthResponse<T>
   ): Promise<void> {
-    const dataToStore: TokenDataLocal = {
+    const dataToStore: TokenData = {
       token: response.token,
       dataUser: response.dataUser,
       userType: response.userType // Usa o userType da resposta se disponível
