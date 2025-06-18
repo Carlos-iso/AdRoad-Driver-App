@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import tokenManager from "../Utils/tokenManager";
 import { UserType }from "../../types/TypesAuthService"
 interface AuthContextData {
-  userType: UserType
+  userType: UserType;
   setUserType: (type: UserType) => void;
   isLoading: boolean;
 }

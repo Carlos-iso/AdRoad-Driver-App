@@ -8,15 +8,6 @@ const formData = {
   cnpj: ""
 }
 export class AuthService {
-  static async register(data: any, userType: string) {
-    return await api.post(`/auth/${userType}/register`, data);
-  }
-
-  static async login(data: any, userType: string) {
-    return await api.post(`/auth/${userType}/login`, data);
-  }
-}
-export class AuthService {
   constructor(user: RegisterData) {
     this.user = user
     this.submitUser(user)
