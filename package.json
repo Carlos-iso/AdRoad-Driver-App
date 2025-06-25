@@ -8,8 +8,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "pull": "git pull && npm ci",
-    "push": "git add . && git commit -m 'Refactor:_Types_Continue' && git push origin main",
+    "pull": "git pull origin main && npm ci",
+    "push": "git add . && git commit -m 'Refactor:_Origin_Main' && git push origin main",
     "type": "tsc --noEmit",
     "type-watch": "tsc --watch --noEmit"
   },
