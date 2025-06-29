@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "pull": "git pull origin main && npm ci",
-    "push": "git add . && git commit -m 'Refactor:_Classes_API' && git push origin main",
+    "push": "git add . && git commit -m 'Refactor:_Update_Locals_To_Run' && git push origin main",
     "type": "tsc --noEmit",
     "type-watch": "tsc --watch --noEmit"
   },

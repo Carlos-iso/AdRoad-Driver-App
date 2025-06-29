@@ -1,10 +1,10 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import MenuTabsRoutes from "./DriverTabs.routes";
-import AdvertiserHome from "../components/Advertiser/AdvertiserHome/Index/AdvertiserHome";
+import AdvertiserHome from "../components/Advertiser/AdvertiserHome/AdvertiserHome";
 // Screens
 import SplashScreen from "../components/SplashScreen/SplashScreen";
 import UserSelect from "../components/UserSelect/Index/UserSelect";
-import AuthScreen from "../components/Auth/Index/Auth";
+import AuthScreen from "../components/Auth/Auth";
 const Stack = createStackNavigator();
 export default function DriverStackRoutes() {
   return (

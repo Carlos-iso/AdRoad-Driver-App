@@ -28,6 +28,7 @@ export default function AuthScreen() {
     password: "",
     confirmPassword: "",
     cnpj: "",
+    cpf: ""
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   // Live validate

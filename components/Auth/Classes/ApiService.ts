@@ -7,6 +7,7 @@ import {
   DriverProfile,
   AdvertiserProfile,
   AuthResponse,
+  AuthRequest,
   LoginCredentials,
   RegisterData,
 } from "../../../types/TypesAuthService"; // Tipos
@@ -14,10 +15,17 @@ import {
 import axios from "axios";
 export class ApiService {
   private static readonly API_BASE_URL = "https://adroad-api.onrender.com";
-  private static apiReq(route: string, body: object) {
-    const res = axios.post(
-      `${this.API_BASE_URL}${route}`, body)
-    return res;
+  private static apiReq(
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE', // Métodos suportados
+    route: string,
+    body?: RegisterData | LoginCredentials // Tornando o body opcional para métodos como GET
+  ): Promise<AuthResponse> {
+    const config = {
+      method,
+      url: `${this.API_BASE_URL}${route}`,
+      data: body // axios usa 'data' para o corpo da requisição
+    };
+    return axios(config);
   }
   /**
    * Metodo de login universal
@@ -28,7 +36,7 @@ export class ApiService {
     credentials: LoginCredentials,
     userType: UserType
   ): Promise<{ data: AuthResponse<T>; userType: UserType }> {
-    let endpoint = `${this.API_BASE_URL}/${userType}/login`;
+    let endpoint = `/${userType}/login`;
     const body =
       userType === "advertiser"
         ? {
@@ -41,7 +49,7 @@ export class ApiService {
           password: credentials.password,
         };
     //To axios
-    const response = await this.apiReq(endpoint, body);
+    const response = await this.apiReq("POST", endpoint, body);
     if (response.status !== 201) {
       const errorData = await response.data;
       throw new Error(errorData.message || "Falha no login");
@@ -61,8 +69,8 @@ export class ApiService {
     userData: RegisterData<T>,
     userType: T
   ): Promise<AuthResponse<T>> {
-    let endpoint = `${this.API_BASE_URL}/${userType}/new`;
-    const response = await this.apiReq(endpoint, userData);
+    let endpoint = `/${userType}/new`;
+    const response = await this.apiReq("POST", endpoint, userData);
     if (response.status !== 201) {
       const errorData = await response.data;
       throw new Error(errorData.message || "Falha no registro");
@@ -78,8 +86,7 @@ export class ApiService {
   static async handleAuthResponse<T extends UserType>(
     response: AuthResponse<T>
   ): Promise<void> {
-    const dataToStore: AuthResponse<UserType> = {
-      message: response.message,
+    const dataToStore: AuthRequest<UserType> = {
       token: response.token,
       dataUser: response.dataUser,
       userType: response.userType, // Usa o userType da resposta se disponível
