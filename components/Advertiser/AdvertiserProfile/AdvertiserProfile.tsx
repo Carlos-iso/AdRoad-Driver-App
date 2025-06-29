@@ -9,7 +9,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../../../../assets/arts/background-adroad.png";
 import LogoIcon from "../../../../assets/svgs/logo-black.svg";
-import styles from "../Stylesheet/StyleAdvertiserProfile"; // Crie este arquivo de estilos
+import styles from "./Stylesheet/StyleAdvertiserProfile"; // Crie este arquivo de estilos
 const AdvertiserProfile = () => {
   // Nome da tela vindo da navegação ou definido manualmente
   const [userName] = useState("Nome do Usuário");

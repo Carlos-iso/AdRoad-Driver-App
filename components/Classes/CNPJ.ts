@@ -5,6 +5,7 @@ export interface CNPJProps {
 }
 export class Cnpj {
   private validator: ValidationContract;
+  private cnpj: CNPJProps;
   constructor(cnpj: CNPJProps) {
     this.cnpj = normalizerCNPJ(cnpj);
     this.validator = new ValidationContract();

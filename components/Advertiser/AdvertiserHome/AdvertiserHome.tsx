@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Image, StatusBar, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../../../routes/types";
-import TokenManager, { TokenDataLocal } from "../../../Utils/tokenManager";
-import styles from "../Stylesheet/StyleAdvertiserHome";
+import { RootStackParamList } from "../../../routes/types";
+import TokenManager, { TokenData } from "../../Utils/tokenManager";
+import styles from "./Stylesheet/StyleAdvertiserHome";
 import backgroundImage from "../../../assets/arts/background-adroad.png";
 import LogoIcon from "../../../assets/svgs/logo-black.svg";
 import { Feather } from "@expo/vector-icons";
-import { AdvertiserProfile } from "../../../../types/TypesAuthService";
+import { AdvertiserProfile } from "../../../types/TypesAuthService";
 type AdvertiserHomeNavigationProp = StackNavigationProp<
   RootStackParamList,
   "AdvertiserHome"
@@ -28,7 +28,6 @@ export default function AdvertiserHome() {
           navigation.replace("Auth", { userType: "advertiser" });
           return;
         }
-        setUserData(data);
         // Verifica o tipo do usuário e extrai os dados corretamente
         const advertiserData = data.dataUser as AdvertiserProfile;
         setAdvertiserData(advertiserData);
@@ -42,7 +41,7 @@ export default function AdvertiserHome() {
     };
     loadUserData();
   }, [navigation]);
-  if (!userData) {
+  if (!advertiserData) {
     return null; // Ou componente de fallback
   }
   return (
