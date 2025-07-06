@@ -33,6 +33,23 @@ export default function AuthScreen() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   // Live validate
   const validateField = (field: string, value: string) => {
+    // Ver onde deve ficar o switch
+    switch (userType) {
+      case "driver":
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "DriverHome" }],
+        });
+        break;
+      case "advertiser":
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "AdvertiserHome" }],
+        });
+        break;
+      default:
+        console.log("Erro inesperado");
+    }
     let validatorInstance: any;
     switch (field) {
       case "email":

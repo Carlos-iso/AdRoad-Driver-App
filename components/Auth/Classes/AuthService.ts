@@ -1,5 +1,6 @@
 import { RegisterData } from "../../../types/TypesAuthService"
-import api from "../api"; // seu Axios configurado
+import api from "../Classes/ApiService";
+import { showAlert } from "../../Alert/Alert"
 const formData = {
   name: "",
   email: "",
@@ -42,45 +43,15 @@ export class AuthService {
               userType: userType,
             };
             // Salva o token
-            // console.log(tokenData);
             await TokenManager.saveAuthData(tokenData);
-            // Navega para a tela principal
-            console.log("Tipo de usuário:", userType);
-            console.log("Objeto navigation:", navigation);
-            const canNavigate = navigation.canGoBack();
-            console.log("Pode navegar:", canNavigate);
-            switch (userType) {
-              case "driver":
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: "DriverHome" }],
-                });
-                break;
-              case "advertiser":
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: "AdvertiserHome" }],
-                });
-                break;
-              default:
-                console.log("Erro inesperado");
-            }
           }
-          // navigateToHome(navigation, tokenData.userType);
           else {
             // Cadastro
             const response = await AuthService.register(requestData, userType);
-            Alert.alert(
-              "Sucesso",
-              response.message || "Cadastro realizado com sucesso"
-            );
-            setIsLogin(true); // Volta para a tela de login
+            showAlert("success", "Sucesso", response.message || "Cadastro realizado com sucesso")
           }
         } catch (error: any) {
-          Alert.alert(
-            "Erro",
-            error.message || "Ocorreu um erro durante a operação"
-          );
+          showAlert("error", "Erro", error.message || "Ocorreu um erro durante a operação")
         }
       }
       setIsLoading(false);
